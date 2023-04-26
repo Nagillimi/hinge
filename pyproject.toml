@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling", "numpy >= 1.24.3"]
+build-backend = "hatchling.build"
+
+[project]
+name = "anatomical_hinge"
+version = "0.0.1"
+authors = [
+  { name="Benjamin Milligan", email="bmilligan9@outlook.com" },
+]
+description = "A package for processing an anatomical hinge joint based on wearable intertial sensors"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+"Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
