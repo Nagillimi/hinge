@@ -1,8 +1,8 @@
 from anatomical_hinge.state import State
-from anatomical_hinge.sensor import Sensor
+from anatomical_hinge.sensor import Sensor, SensorType
+from anatomical_hinge.data import Data
 
 class AnatomicalHinge:
-
     def __init__(self) -> None:
         self.operationMap = {
             State.INIT                      : self.initialize(),
@@ -19,32 +19,21 @@ class AnatomicalHinge:
         self.stateMachine()
     
     def stateMachine(self) -> None:
-        # if self.state == State.DETECT_DOWNSAMPLING_INDEX:
-        #     self.detectDownsamplingIndex()
-        # elif self.state == State.WAIT_FOR_MOTION:
-        #     self.waitForMotion()
-        # elif self.state == State.JOINT_AXIS_INIT:
-        #     self.jointAxisInit()
-        # elif self.state == State.JOINT_AXIS_ESTIMATION:
-        #     self.jointAxisEstimation()
-        # elif self.state == State.JOINT_POSE_ESTIMATION:
-        #     self.jointPoseEstimation()
-        # elif self.state == State.WAIT_FOR_STILLNESS:
-        #     self.waitingForStillness()
-        # elif self.state == State.RUN:
-        #     self.run()
-        # elif self.state == State.RESET:
-        #     self.reset()
-
         self.operationMap[self.state]()
-        self.state._generate_next_value_()
+        self.state = self.state(self.state.value + 1)
+
+    def update(self, data: Data):
+        self.a1.update(data.ts, data.a1)
+        self.g1.update(data.ts, data.g1)
+        self.a2.update(data.ts, data.a2)
+        self.g2.update(data.ts, data.g2)
+        self.stateMachine()
 
     def initialize(self):
-        self.a1 = Sensor('accel')
-        self.a2 = Sensor('accel')
-        self.g1 = Sensor('gyro')
-        self.g2 = Sensor('gyro')
+        self.a1 = Sensor(1, SensorType.Accelerometer)
+        self.g1 = Sensor(2, SensorType.Gyroscope)
+        self.a2 = Sensor(3, SensorType.Accelerometer)
+        self.g2 = Sensor(4, SensorType.Gyroscope)
         
-
     def detectDownsamplingIndex():
         print(1)

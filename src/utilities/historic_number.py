@@ -1,2 +1,0 @@
-class HistoricNumber:
-    current

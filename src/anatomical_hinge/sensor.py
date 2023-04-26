@@ -1,18 +1,26 @@
-import numpy as np
+from utilities.historic import HistoricPoint, HistoricNumber
+from enum import Enum
+
+class SensorType(Enum):
+    Accelerometer = 'Accelerometer'
+    Gyroscope = 'Gyroscope'
 
 class Sensor:
-    def __init__(self, type: str) -> None:
-        # init 2d array
-        self.raw = np.array([],[])
+    def __init__(self, id: int, type: SensorType) -> None:
+        self.id = id
         self.type = type
+        self.raw = HistoricPoint()
+        self.deriv = HistoricPoint()
+        self.ts = HistoricNumber()
 
-    def update(self, newRaw) -> None:
-        # append new data to beginning of 2d array
-        self.raw = newRaw
+    def update(self, newTs: int, newRaw: list) -> None:
+        self.ts.shift(newTs)
+        self.raw.shift(newRaw)
+        self.calculateDerivative()
 
     # tsArr : time array, where the first el is the latest ts (larger number)
-    def calculateDerivative(self, tsArr: np.ndarray[np.uint32]) -> None:
-        den = 2 * (tsArr[0] - tsArr[2])
-        num = self.raw.current - self.raw.past2
-        self.deriv = num / den
-
+    def calculateDerivative(self) -> None:
+        den = 2 * (self.ts.current - self.ts.past2)
+        self.deriv.x = (self.raw.x.current - self.raw.x.past2) / den
+        self.deriv.y = (self.raw.y.current - self.raw.y.past2) / den
+        self.deriv.z = (self.raw.z.current - self.raw.z.past2) / den
