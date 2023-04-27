@@ -1,6 +1,8 @@
 from anatomical_hinge.state import State
 from anatomical_hinge.sensor import Sensor, SensorType
 from anatomical_hinge.data import Data
+from anatomical_hinge.calibration.axis import AxisCalibration
+from anatomical_hinge.calibration.pose import PoseCalibration
 
 class AnatomicalHinge:
     def __init__(self) -> None:
@@ -34,6 +36,8 @@ class AnatomicalHinge:
         self.g1 = Sensor(2, SensorType.Gyroscope)
         self.a2 = Sensor(3, SensorType.Accelerometer)
         self.g2 = Sensor(4, SensorType.Gyroscope)
+        self.axisCalibration = AxisCalibration()
+        self.poseCalibration = PoseCalibration()
         
     def detectDownsamplingIndex():
         print(1)

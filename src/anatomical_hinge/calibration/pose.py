@@ -1,7 +1,5 @@
 import numpy as np
-import sensor_data as sd
 
-class Calibrate:
-
+class PoseCalibration:
     def __init__(self) -> None:
-        
+        pass
