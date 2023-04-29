@@ -16,7 +16,8 @@ class Sensor:
     def update(self, newTs: int, newRaw: list) -> None:
         self.ts.shift(newTs)
         self.raw.shift(newRaw)
-        self.calculateDerivative()
+        if self.type == SensorType.Gyroscope:
+            self.calculateDerivative()
 
     # tsArr : time array, where the first el is the latest ts (larger number)
     def calculateDerivative(self) -> None:

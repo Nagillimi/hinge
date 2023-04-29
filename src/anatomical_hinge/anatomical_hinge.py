@@ -1,43 +1,49 @@
-from anatomical_hinge.state import State
-from anatomical_hinge.sensor import Sensor, SensorType
-from anatomical_hinge.data import Data
-from anatomical_hinge.calibration.axis import AxisCalibration
-from anatomical_hinge.calibration.pose import PoseCalibration
+from state import State
+from data import Data
+from sensor_collection import SensorCollection
+from calibration.axis import AxisCalibration
+from calibration.pose import PoseCalibration
+from anatomical_hinge.kinematics import Kinematics
 
 class AnatomicalHinge:
+    collection = SensorCollection()
+    kinematics = Kinematics()
+    axisCalibration = AxisCalibration()
+    poseCalibration = PoseCalibration()
+    hingeJoint = HingeJoint()
+
     def __init__(self) -> None:
-        self.operationMap = {
-            State.INIT                      : self.initialize(),
-            State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(),
-            State.WAIT_FOR_MOTION           : self.waitForMotion(),
-            State.JOINT_AXIS_INIT           : self.jointAxisInit(),
-            State.JOINT_AXIS_ESTIMATION     : self.jointAxisEstimation(),
-            State.JOINT_POSE_ESTIMATION     : self.jointPoseEstimation(),
-            State.WAIT_FOR_STILLNESS        : self.waitingForStillness(),
-            State.RUN                       : self.run(),
+        self.mappedOperation = {
+            State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(self.collection),
+            State.WAIT_FOR_MOTION           : self.kinematics.waitForMotion(self.collection),
+            State.CALIBRATING               : self.calibrate(),
+            State.WAIT_FOR_STILLNESS        : self.kinematics.waitForStillness(self.collection),
+            State.RUN                       : self.hingeJoint.compute(self.collection),
             State.RESET                     : self.reset(),
         }
-        self.state = State.INIT
+        self.state = 1
         self.stateMachine()
     
-    def stateMachine(self) -> None:
-        self.operationMap[self.state]()
-        self.state = self.state(self.state.value + 1)
+    # generic list type, easy API
+    # converts to internal sensor collection used by the algorithms
+    def update(self, data: Data) -> float:
+        self.collection.update(data)
+        self.mappedOperation[self.state]()
+        return hingeJoint.angle
 
-    def update(self, data: Data):
-        self.a1.update(data.ts, data.a1)
-        self.g1.update(data.ts, data.g1)
-        self.a2.update(data.ts, data.a2)
-        self.g2.update(data.ts, data.g2)
-        self.stateMachine()
-
-    def initialize(self):
-        self.a1 = Sensor(1, SensorType.Accelerometer)
-        self.g1 = Sensor(2, SensorType.Gyroscope)
-        self.a2 = Sensor(3, SensorType.Accelerometer)
-        self.g2 = Sensor(4, SensorType.Gyroscope)
-        self.axisCalibration = AxisCalibration()
-        self.poseCalibration = PoseCalibration()
-        
     def detectDownsamplingIndex():
-        print(1)
+        pass
+
+    # run axis estimation
+    # if return true, set the j vectors in the o vector class
+    # run pose estimtation (one & done)
+    # set the j & o vectors to the angle class
+    def calibrate(self):
+        if self.axisCalibration.calibrate(self.collection):
+            # set the same motion data for pose calibration
+            self.poseCalibration.calibrate(self.axisCalibration.motionData)
+            self.hingeJoint.setCalibration(self.axisCalibration, self.poseCalibration)
+            self.state += 1
+
+    def reset():
+        pass
