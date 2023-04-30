@@ -1,42 +1,59 @@
-from numpy import array
+import numpy as np
 from calibration.x_sphere import XSphere
 from sensor_collection import SensorCollection
 
 class CommonGradientDescent:
-    # working iteration index
+    # Working iteration index
     k = 0
 
     # Solution iteration index
     s = 0
 
-    # [1] (used as [N] for threshold calc) working sum of squares error
-    vSOS = array(dtype=float)
+    # Working sum of squares error
+    #
+    # [1] (used as [N] for threshold calc)
+    vSOS = [float()]
 
-    # [4xN] the working solutions throughout algorithm iterations
-    x = array(dtype=XSphere)
+    # Working solutions throughout algorithm iterations.
+    #
+    # [4xN]
+    x = [XSphere()]
 
-    # the combined gyro & accel polar gradient (jacobian) for gradient descent
-    jac = array(dtype=float)
+    # Combined gyro & accel polar gradient (jacobian) for gradient descent.
+    #
+    # [2Nx4] & [Nx4] for axis & pose calibrations respectively.
+    jac = [[float()]]
 
-    # the transpose of the combined gyro & accel polar gradient (jacobian) for
-    # gradient descent
-    jacT = array(dtype=float, ndmin=4)
+    # Transpose of the combined gyro & accel polar gradient (jacobian) for
+    # gradient descent.
+    #
+    # [4x2N] & [4xN] for axis & pose calibrations respectively.
+    jacT = [[float()]]
 
-    # [4x4] the hessian matrix, always square
-    hessian = array(dtype=float, ndmin=4)
+    # Hessian matrix (square), H = inv(Jac^T(x) * Jac(x))
+    # 
+    # [4x4] = [4x2N][2Nx4]
+    hessian = np.zeros(shape=(4, 4))
     
-    # [4x1] step direction for x based on the polar gradient and residual errors
+    # Step direction for x based on the polar gradient and residual errors
+    #
+    # [4x1]
     stepDir = XSphere()
 
-    # step length based on the backtracking line search
+    # Step length based on the backtracking line search
     stepSize = 0.0
 
-    # scratch/temp variables, for saving storage
-    v3temp1 = array(dtype=float)
-    v3temp2 = array(dtype=float)
-    v3temp3 = array(dtype=float)
-    v3temp4 = array(dtype=float)
-    jac_temp = array(dtype=float)
+    # The derivative of the error at the current iteration, ie the new jacobian row.
+    # de_dx = d(j | o)_dx * de_d(j | o)
+    # 
+    # [4x1] = [4x6][6x1]
+    de_dx = np.zeros(shape=(4, 1))
 
-    # motion data stored for computing the pose calibration (requires the same data)
-    motionData: array(dtype=SensorCollection)
+    # Motion data stored for computing the pose calibration (requires the same data)
+    motionData = [SensorCollection()]
+    
+    # Scratch/temp variables, for saving storage
+    v3temp1 = np.zeros(shape=(1, 3))
+    v3temp2 = np.zeros(shape=(1, 3))
+    v3temp3 = np.zeros(shape=(1, 3))
+    v3temp4 = np.zeros(shape=(1, 3))
