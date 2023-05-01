@@ -16,9 +16,6 @@ class AxisCalibration(CommonGradientDescent):
     # Array of converged solutions for evaluation
     sols = [AxisSolutionSet()]
 
-    # vector for joint CS, where c is not parallel to either j1 or j2
-    c = np.array((0, 1, 0))
-
     # vector for joint CS, where x1 is orthogonal to j1 and y1
     x1 = np.zeros(shape=(1, 3))
 

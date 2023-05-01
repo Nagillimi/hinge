@@ -6,12 +6,12 @@ from calibration.pose import PoseCalibration
 from error.calibration_error import CalibrationError
 from anatomical_hinge.kinematics import Kinematics
 
+
 class AnatomicalHinge:
     collection = SensorCollection()
     kinematics = Kinematics()
     axisCalibration = AxisCalibration()
     poseCalibration = PoseCalibration()
-    hingeJoint = HingeJoint()
 
     def __init__(self) -> None:
         self.mappedOperation = {
@@ -19,7 +19,7 @@ class AnatomicalHinge:
             State.WAIT_FOR_MOTION           : self.kinematics.waitForMotion(self.collection),
             State.CALIBRATING               : self.calibrate(),
             State.WAIT_FOR_STILLNESS        : self.kinematics.waitForStillness(self.collection),
-            State.RUN                       : self.hingeJoint.compute(self.collection),
+            State.RUN                       : self.computeAngle(self.collection),
             State.RESET                     : self.reset(),
         }
         self.state = 1
@@ -50,5 +50,15 @@ class AnatomicalHinge:
         else:
             print(result.value)
 
-    def reset():
+    def computeAngle(self):
+        # this.accelerometerBasedHingeAngle();
+        # if(!this.initialConditionSet) {
+        #     this.setInitialConditions();
+        # } else { 
+        #     this.gyroscopicBasedHingeAngle();
+        #     this.combinedHingeAngle();
+        # }
+        pass
+
+    def reset(self):
         pass
