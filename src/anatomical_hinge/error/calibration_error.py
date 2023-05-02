@@ -1,7 +1,7 @@
 from enum import Enum
 
-class CalibrationError(Enum):
+class CalibrationResult(Enum):
     SUCCESS = "Calibration succeeded"
-    TEST = "This is a test error"
-
+    NOT_ENOUGH_UNIQUE_MOTION = "Not enough unique motion data"
+    MOTION_ERROR_ABOVE_THRESHOLD = "Sum of squares error of motion above threshold"
     

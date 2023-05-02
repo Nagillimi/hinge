@@ -3,7 +3,7 @@ from data import Data
 from sensor_collection import SensorCollection
 from calibration.axis import AxisCalibration
 from calibration.pose import PoseCalibration
-from error.calibration_error import CalibrationError
+from error.calibration_error import CalibrationResult
 from anatomical_hinge.kinematics import Kinematics
 
 
@@ -25,6 +25,7 @@ class AnatomicalHinge:
         self.state = 1
         self.stateMachine()
     
+
     # generic list type, easy API
     # converts to internal sensor collection used by the algorithms
     def update(self, data: Data) -> float:
@@ -32,8 +33,10 @@ class AnatomicalHinge:
         self.mappedOperation[self.state]()
         return hingeJoint.angle
 
+
     def detectDownsamplingIndex():
         pass
+
 
     # run axis estimation
     # if return true, set the j vectors in the o vector class
@@ -41,7 +44,7 @@ class AnatomicalHinge:
     # set the j & o vectors to the angle class
     def calibrate(self):
         result = self.axisCalibration.calibrate(self.collection)
-        if result == CalibrationError.SUCCESS:
+        if result == CalibrationResult.SUCCESS:
             # set the same motion data for pose calibration
             self.poseCalibration.setAxis(self.axisCalibration)
             self.poseCalibration.calibrate(self.axisCalibration.motionData)
@@ -49,6 +52,7 @@ class AnatomicalHinge:
             self.state += 1
         else:
             print(result.value)
+
 
     def computeAngle(self):
         # this.accelerometerBasedHingeAngle();
@@ -59,6 +63,7 @@ class AnatomicalHinge:
         #     this.combinedHingeAngle();
         # }
         pass
+
 
     def reset(self):
         pass

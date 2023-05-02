@@ -1,19 +1,25 @@
+from typing import Self, Type
+
+
 class HistoricNumber:
-    current = 0
-    past = 0
-    past2 = 0
+    def __init__(self) -> None:
+        self.current: float = 0.0
+        self.past: float    = 0.0
+        self.past2: float   = 0.0
 
-    def shift(self, newTs):
-        self.past2 = self.past
-        self.past = self.current
-        self.current = newTs
+    def shift(self, newNumber: float):
+        self.past2   = self.past
+        self.past    = self.current
+        self.current = newNumber
         
-class HistoricPoint:
-    x = HistoricNumber()
-    y = HistoricNumber()
-    z = HistoricNumber()
 
-    def shift(self, newPoint: list):
-        self.x.shift(x)
-        self.y.shift(y)
-        self.z.shift(z)
+class HistoricPoint:
+    def __init__(self) -> None:
+        self.x = HistoricNumber()
+        self.y = HistoricNumber()
+        self.z = HistoricNumber()
+
+    def shift(self, newPoint: list[float]):
+        self.x.shift(newPoint[0])
+        self.y.shift(newPoint[1])
+        self.z.shift(newPoint[2])
