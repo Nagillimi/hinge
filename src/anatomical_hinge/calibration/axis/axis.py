@@ -1,6 +1,6 @@
 import numpy as np
 from anatomical_hinge.constants import Constants
-from error.calibration_error import CalibrationResult
+from result.calibration_result import CalibrationResult
 from calibration.x_sphere import XSphere
 from calibration.solution_set import SolutionSet
 from sensor_collection import SensorCollection

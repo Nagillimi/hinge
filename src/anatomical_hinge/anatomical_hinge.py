@@ -1,29 +1,33 @@
+from constants import Constants
 from state import State
 from data import Data
 from sensor_collection import SensorCollection
-from calibration.axis import AxisCalibration
-from calibration.pose import PoseCalibration
-from error.calibration_error import CalibrationResult
-from anatomical_hinge.kinematics import Kinematics
+from joint import HingeJoint
+from calibration.axis.axis import AxisCalibration
+from calibration.pose.pose import PoseCalibration
+from result.calibration_result import CalibrationResult
+from result.temporal_result import TemporalResult
+from kinematics import Kinematics
+from utilities.temporal import DetectDownsampling
 
 
 class AnatomicalHinge:
-    collection = SensorCollection()
-    kinematics = Kinematics()
-    axisCalibration = AxisCalibration()
-    poseCalibration = PoseCalibration()
-
     def __init__(self) -> None:
+        self.collection = SensorCollection()
+        self.kinematics = Kinematics()
+        self.detectDownsampling = DetectDownsampling()
+        self.axisCalibration = AxisCalibration()
+        self.poseCalibration = PoseCalibration()
+        self.hingeJoint = HingeJoint()
+        self.state = 1
         self.mappedOperation = {
-            State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(self.collection),
+            State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(),
             State.WAIT_FOR_MOTION           : self.kinematics.waitForMotion(self.collection),
             State.CALIBRATING               : self.calibrate(),
             State.WAIT_FOR_STILLNESS        : self.kinematics.waitForStillness(self.collection),
-            State.RUN                       : self.computeAngle(self.collection),
+            State.RUN                       : self.run(),
             State.RESET                     : self.reset(),
         }
-        self.state = 1
-        self.stateMachine()
     
 
     # generic list type, easy API
@@ -31,11 +35,14 @@ class AnatomicalHinge:
     def update(self, data: Data) -> float:
         self.collection.update(data)
         self.mappedOperation[self.state]()
-        return hingeJoint.angle
+        return self.hingeJoint.combinedAngle
 
 
-    def detectDownsamplingIndex():
-        pass
+    def detectDownsamplingIndex(self):
+        result = self.detectDownsampling.update(self.collection.a1.ts)
+        print(result.value)
+        if result == TemporalResult.OPTIMAL:
+            Constants.ALGORITHM_DOWNSAMPLING_INDEX = self.detectDownsampling.index            
 
 
     # run axis estimation
@@ -44,17 +51,20 @@ class AnatomicalHinge:
     # set the j & o vectors to the angle class
     def calibrate(self):
         result = self.axisCalibration.calibrate(self.collection)
+        print(result.value)
         if result == CalibrationResult.SUCCESS:
             # set the same motion data for pose calibration
             self.poseCalibration.setAxis(self.axisCalibration)
             self.poseCalibration.calibrate(self.axisCalibration.motionData)
             self.hingeJoint.setCalibration(self.axisCalibration, self.poseCalibration)
             self.state += 1
-        else:
-            print(result.value)
 
 
-    def computeAngle(self):
+    def run(self):
+        result = self.hingeJoint.update()
+        print(result.value)
+        if result
+
         # this.accelerometerBasedHingeAngle();
         # if(!this.initialConditionSet) {
         #     this.setInitialConditions();
