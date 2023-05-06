@@ -4,7 +4,7 @@ from result.temporal_result import TemporalResult
 from statistics import mean
 
 class DetectDownsampling:
-    def __init__(self, sampleCount = 100, msLatencyTol = 0.1):
+    def __init__(self, sampleCount = 10, msLatencyTol = 0.1):
         self.tsBuffer = [int]
         self.k = 0
         self.index = 0

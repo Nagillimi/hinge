@@ -5,11 +5,15 @@ from calibration.x_sphere import XSphere
 from calibration.solution_set import SolutionSet
 from sensor_collection import SensorCollection
 from error_function import ErrorFunction
+from kinematics import Kinematics
 
 # calculates the j vectors
 class AxisCalibration(ErrorFunction):
     def __init__(self):
         super()
+
+        # recognize data signals and assign kinematic status
+        self.kinematics = Kinematics()
 
         # Array of converged solutions for evaluation
         self.sols = [SolutionSet]
@@ -29,6 +33,10 @@ class AxisCalibration(ErrorFunction):
 
     # Run calibration based on new sensor data from the collection
     def calibrate(self, collection: SensorCollection) -> CalibrationResult:
+        # test motion
+        if self.kinematics.isMoving(collection) is False:
+            return CalibrationResult.WAITING_FOR_MOTION
+
         self.motionData.append(collection)
 
         # get current j vectors (temp)
