@@ -21,8 +21,8 @@ class ErrorFunction(GradientDescent):
     # Updates the temporary joint vectors based on the current x
     # [3x1]
     def updatePoseVectors(self):
-        self.o1_temp = self.x[-1].imu1.toRectangular()
-        self.o2_temp = self.x[-1].imu2.toRectangular()
+        self.o1_temp = self.x[-1].vector1.toRectangular()
+        self.o2_temp = self.x[-1].vector2.toRectangular()
 
 
     # Updates the accumulating SOS error
@@ -48,7 +48,7 @@ class ErrorFunction(GradientDescent):
         ])
 
         # construct the de_do
-        
+
 
         # single accel-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
         # inserted at the end of the jacbian row index (N)
@@ -76,7 +76,7 @@ class ErrorFunction(GradientDescent):
     def getIMU1Error(self, x = Optional[XSphere]) -> float:
         sensorData = self.motionData.sensorData[-1]
         if x:
-            o1_temp = x.imu1.toRectangular()
+            o1_temp = x.vector1.toRectangular()
         else:
             pass
 
@@ -84,7 +84,7 @@ class ErrorFunction(GradientDescent):
     def getIMU2Error(self, x = Optional[XSphere]) -> float:
         sensorData = self.motionData.sensorData[-1]
         if x:
-            o1_temp = x.imu1.toRectangular()
+            o1_temp = x.vector1.toRectangular()
         else:
             pass
         

@@ -46,10 +46,10 @@ class AxisCalibration(ErrorFunction):
 
         # save new x
         self.x.append(XSphere(
-            t1 = self.x[-1].imu1.theta - self.stepSize * self.stepDir.imu1.theta,
-            p1 = self.x[-1].imu1.phi   - self.stepSize * self.stepDir.imu1.phi,
-            t2 = self.x[-1].imu2.theta - self.stepSize * self.stepDir.imu2.theta,
-            p2 = self.x[-1].imu2.phi   - self.stepSize * self.stepDir.imu2.phi
+            t1 = self.x[-1].vector1.theta - self.stepSize * self.stepDir.vector1.theta,
+            p1 = self.x[-1].vector1.phi   - self.stepSize * self.stepDir.vector1.phi,
+            t2 = self.x[-1].vector2.theta - self.stepSize * self.stepDir.vector2.theta,
+            p2 = self.x[-1].vector2.phi   - self.stepSize * self.stepDir.vector2.phi
         ))
 
         # iterate

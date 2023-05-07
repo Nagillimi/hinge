@@ -22,8 +22,8 @@ class ErrorFunction(GradientDescent):
     # Updates the temporary joint vectors based on the current x
     # [3x1]
     def updateJointVectors(self):
-        self.j1_temp = self.x[-1].imu1.toRectangular()
-        self.j2_temp = self.x[-1].imu2.toRectangular()
+        self.j1_temp = self.x[-1].vector1.toRectangular()
+        self.j2_temp = self.x[-1].vector2.toRectangular()
 
 
     # Updates the accumulating SOS error
@@ -95,8 +95,8 @@ class ErrorFunction(GradientDescent):
     def getGyroError(self, x = Optional[XSphere]) -> float:
         sensorData = self.motionData.sensorData[-1]
         if x:
-            j1_temp = x.imu1.toRectangular()
-            j2_temp = x.imu2.toRectangular()
+            j1_temp = x.vector1.toRectangular()
+            j2_temp = x.vector2.toRectangular()
             self.v3temp1 = np.cross(sensorData.g1, j1_temp)
             self.v3temp2 = np.cross(sensorData.g2, j2_temp)
         else:
@@ -112,8 +112,8 @@ class ErrorFunction(GradientDescent):
     def getAccelError(self, x = Optional[XSphere]) -> float:
         sensorData = self.motionData.sensorData[-1]
         if x:
-            j1_temp = x.imu1.toRectangular()
-            j2_temp = x.imu2.toRectangular()
+            j1_temp = x.vector1.toRectangular()
+            j2_temp = x.vector2.toRectangular()
             c1 = j1_temp.dot(sensorData.a1)
             c2 = j2_temp.dot(sensorData.a2) 
         else:
