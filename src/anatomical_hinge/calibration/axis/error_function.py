@@ -1,5 +1,4 @@
-import math
-from typing import List, Optional
+from typing import Optional
 import numpy as np
 from gradient_descent import GradientDescent
 from calibration.x_sphere import XSphere
@@ -7,7 +6,7 @@ from constants import Constants
 
 class ErrorFunction(GradientDescent):
     def __init__(self):
-        super()
+        super().__init__()
 
         # scratch/temp variables, for saving storage
         self.j1_temp = np.zeros(shape=(1, 3))
@@ -36,17 +35,17 @@ class ErrorFunction(GradientDescent):
     # Updates the jacobian (de_dx) for the current iteration
     # [2Nx4]
     def updateJacobian(self):
-        sensorData = self.motionData[-1]
+        sensorData = self.motionData.sensorData[-1]
         xData = self.x[-1]
         s = xData.sin()
         c = xData.cos()
 
         # compute the dj_dx based on current x, [4x6]
         dj_dx = np.array([
-            [-(s[0]*c[1]), -(s[0]*s[1]),  +(c[0]),   (0),    (0),    (0)   ],
-            [-(c[0]*s[1]), +(c[0]*c[1]),     (0),    (0),    (0),    (0)   ],
-            [   (0),      (0),     (0), -(s[2]*c[3]), -(s[2]*s[3]), +(c[2])],
-            [   (0),      (0),     (0), -(c[2]*s[3]), +(c[2]*c[3]),  (0)   ]
+            [-(s[0]*c[1]), -(s[0]*s[1]),   +(c[0]),     (0),          (0),        (0)  ],
+            [-(c[0]*s[1]), +(c[0]*c[1]),      (0),      (0),          (0),        (0)  ],
+            [     (0),          (0),          (0), -(s[2]*c[3]), -(s[2]*s[3]),  +(c[2])],
+            [     (0),          (0),          (0), -(c[2]*s[3]), +(c[2]*c[3]),    (0)  ]
         ])
 
         # single gyro-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
@@ -94,14 +93,15 @@ class ErrorFunction(GradientDescent):
 
 
     def getGyroError(self, x = Optional[XSphere]) -> float:
+        sensorData = self.motionData.sensorData[-1]
         if x:
             j1_temp = x.imu1.toRectangular()
             j2_temp = x.imu2.toRectangular()
-            self.v3temp1 = np.cross(self.motionData[-1].g1, j1_temp)
-            self.v3temp2 = np.cross(self.motionData[-1].g2, j2_temp)
+            self.v3temp1 = np.cross(sensorData.g1, j1_temp)
+            self.v3temp2 = np.cross(sensorData.g2, j2_temp)
         else:
-            self.v3temp1 = np.cross(self.motionData[-1].g1, self.j1_temp)
-            self.v3temp2 = np.cross(self.motionData[-1].g2, self.j2_temp)
+            self.v3temp1 = np.cross(sensorData.g1, self.j1_temp)
+            self.v3temp2 = np.cross(sensorData.g2, self.j2_temp)
 
         c1 = np.linalg.norm(self.v3temp1)
         c2 = np.linalg.norm(self.v3temp2)
@@ -110,14 +110,15 @@ class ErrorFunction(GradientDescent):
 
 
     def getAccelError(self, x = Optional[XSphere]) -> float:
+        sensorData = self.motionData.sensorData[-1]
         if x:
             j1_temp = x.imu1.toRectangular()
             j2_temp = x.imu2.toRectangular()
-            c1 = j1_temp.dot(self.motionData[-1].a1)
-            c2 = j2_temp.dot(self.motionData[-1].a2) 
+            c1 = j1_temp.dot(sensorData.a1)
+            c2 = j2_temp.dot(sensorData.a2) 
         else:
-            c1 = self.j1_temp.dot(self.motionData[-1].a1)
-            c2 = self.j2_temp.dot(self.motionData[-1].a2)       
+            c1 = self.j1_temp.dot(sensorData.a1)
+            c2 = self.j2_temp.dot(sensorData.a2)       
         
         return Constants.wACCEL * (c1 - c2)
     

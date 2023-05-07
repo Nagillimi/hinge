@@ -1,4 +1,3 @@
-from numpy import array
 from calibration.x_sphere import XSphere
 
 class SolutionSet:

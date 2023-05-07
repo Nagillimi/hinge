@@ -1,44 +1,32 @@
-import numpy as np
-from anatomical_hinge.constants import Constants
+from typing import Union
+from constants import Constants
+from result.kinematics_result import KinematicResult
 from result.calibration_result import CalibrationResult
 from calibration.x_sphere import XSphere
 from calibration.solution_set import SolutionSet
 from sensor_collection import SensorCollection
 from error_function import ErrorFunction
-from kinematics import Kinematics
+from kinematics import Kinematic
 
 # calculates the j vectors
 class AxisCalibration(ErrorFunction):
     def __init__(self):
-        super()
+        super().__init__()
 
         # recognize data signals and assign kinematic status
-        self.kinematics = Kinematics()
-
-        # Array of converged solutions for evaluation
-        self.sols = [SolutionSet]
-
-        # vector for joint CS, where x1 is orthogonal to j1 and y1
-        self.x1 = np.zeros(shape=(1, 3))
-
-        # vector for joint CS, where y1 is orthogonal to j1 and x1
-        self.y1 = np.zeros(shape=(1, 3))
-
-        # vector for joint CS, where x2 is orthogonal to j2 and y2
-        self.x2 = np.zeros(shape=(1, 3))
-
-        # vector for joint CS, where y2 is orthogonal to j2 and x2
-        self.y2 = np.zeros(shape=(1, 3))
+        self.kinematic = Kinematic()
 
 
     # Run calibration based on new sensor data from the collection
-    def calibrate(self, collection: SensorCollection) -> CalibrationResult:
-        # test motion
-        if self.kinematics.isMoving(collection) is False:
-            return CalibrationResult.WAITING_FOR_MOTION
+    def update(self, collection: SensorCollection) -> Union[CalibrationResult, KinematicResult]:
+        self.kinematic.update(collection)
+        self.motionData.update(collection, self.kinematic.stateBuffer[-1].state)
 
-        self.motionData.append(collection)
-
+        # only run calibration on signals with consistent motion
+        motionTest = self.kinematic.testForConsecutive()
+        if motionTest != KinematicResult.CONSECUTIVE_MOTION_DETECTED:
+            return motionTest
+        
         # get current j vectors (temp)
         self.updateJointVectors()
 

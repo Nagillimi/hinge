@@ -1,7 +1,8 @@
 import numpy as np
-from anatomical_hinge.constants import Constants
+from anatomical_hinge.calibration.solution_set import SolutionSet
+from constants import Constants
 from x_sphere import XSphere
-from sensor_collection import SensorCollection
+from calibration.motion_data import MotionData
 
 class GradientDescent:
     def __init__(self):
@@ -12,7 +13,7 @@ class GradientDescent:
         self.s = 0
 
         # Residual errors for gyro and accel, e(x)
-        # [2Nx1]
+        # [(2)Nx1]
         self.err = [float()]
 
         # Working sum of squares error
@@ -56,7 +57,7 @@ class GradientDescent:
         self.de_dx = np.zeros(shape=(4, 1))
 
         # Motion data stored for computing the pose calibration (requires the same data)
-        self.motionData = [SensorCollection()]
+        self.motionData = MotionData()
         
         # Scratch/temp variables, for saving storage
         self.v3temp1 = np.zeros(shape=(1, 3))
@@ -64,6 +65,8 @@ class GradientDescent:
         self.v3temp3 = np.zeros(shape=(1, 3))
         self.v3temp4 = np.zeros(shape=(1, 3))
 
+        # single solution collection for the position algorithm convergence
+        self.sols = [SolutionSet()]
 
     # Updates the step direction based on the polar gradient and residual errors.
     def updateStepDirection(self):

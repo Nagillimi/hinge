@@ -1,5 +1,3 @@
-from typing import Self, Type
-
 
 class HistoricNumber:
     def __init__(self) -> None:
@@ -23,3 +21,12 @@ class HistoricPoint:
         self.x.shift(newPoint[0])
         self.y.shift(newPoint[1])
         self.z.shift(newPoint[2])
+
+    def current(self) -> list[float]:
+        return [self.x.current, self.y.current, self.z.current]
+
+    def past(self) -> list[float]:
+        return [self.x.past, self.y.past, self.z.past]
+
+    def past2(self) -> list[float]:
+        return [self.x.past2, self.y.past2, self.z.past2]
