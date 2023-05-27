@@ -4,7 +4,6 @@
 # TRY TO ONLY CHANGE ONE CONSTANT AT A TIME
 
 import math
-import numpy as np
 
 class Constants:
     # Switch to display logs to the console.  
@@ -65,7 +64,7 @@ class Constants:
 
     # The common vector that translates each IMU sensor frame to the global
     # joint frame
-    C_VECTOR = np.array([[0, 1, 0]])
+    C_VECTOR = [0.0, 1.0, 0.0]
 
     #: HINGE JOINT AXIS & POSE ALGORITHM CONSTANTS 
 
@@ -145,7 +144,7 @@ class Constants:
     GRAVITY = 9.807
 
     # Multiplication factor to convert from radians to degrees
-    RAD_TO_DEG = 180 / math.PI
+    RAD_TO_DEG = 180 / math.pi
 
     # Switch to toggle testing which runs the algorithm endlessly until max number of 
     # tests are reached

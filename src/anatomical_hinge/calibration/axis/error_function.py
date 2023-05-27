@@ -50,12 +50,12 @@ class ErrorFunction(GradientDescent):
 
         # single gyro-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
         # inserted halfway down the jacbian row index (N)
-        g1_de_dj = np.cross(sensorData.g1, self.j1_temp)
+        g1_de_dj = np.cross(sensorData.g1.raw.current, self.j1_temp)
         norm = np.linalg.norm(g1_de_dj)
-        g1_de_dj = np.cross(g1_de_dj, sensorData.g1) / norm
-        g2_de_dj = np.cross(sensorData.g2, self.j2_temp)
+        g1_de_dj = np.cross(g1_de_dj, sensorData.g1.raw.current) / norm
+        g2_de_dj = np.cross(sensorData.g2.raw.current, self.j2_temp)
         norm = np.linalg.norm(g2_de_dj)
-        g2_de_dj = np.cross(g2_de_dj, sensorData.g2) / norm
+        g2_de_dj = np.cross(g2_de_dj, sensorData.g2.raw.current) / norm
         self.jac.insert(
             self.k,
             np.matmul(dj_dx, np.vstack(g1_de_dj, -g2_de_dj)) * Constants.wGYRO
@@ -68,10 +68,16 @@ class ErrorFunction(GradientDescent):
         # single accel-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
         # inserted at the end of the jacbian row index (2N)
         self.jac.append(
-            np.matmul(dj_dx, np.vstack(sensorData.a1, -sensorData.a2)) * Constants.wACCEL
+            np.matmul(
+                dj_dx,
+                np.vstack(sensorData.a1.raw.current, -sensorData.a2.raw.current)
+            ) * Constants.wACCEL
         )
         self.jacT.append(
-            np.matmul(dj_dx, np.hstack(sensorData.a1, -sensorData.a2)) * Constants.wACCEL
+            np.matmul(
+                dj_dx,
+                np.hstack(sensorData.a1.raw.current, -sensorData.a2.raw.current)
+            ) * Constants.wACCEL
         )
         
 
@@ -97,11 +103,11 @@ class ErrorFunction(GradientDescent):
         if x:
             j1_temp = x.vector1.toRectangular()
             j2_temp = x.vector2.toRectangular()
-            self.v3temp1 = np.cross(sensorData.g1, j1_temp)
-            self.v3temp2 = np.cross(sensorData.g2, j2_temp)
+            self.v3temp1 = np.cross(sensorData.g1.raw.current, j1_temp)
+            self.v3temp2 = np.cross(sensorData.g2.raw.current, j2_temp)
         else:
-            self.v3temp1 = np.cross(sensorData.g1, self.j1_temp)
-            self.v3temp2 = np.cross(sensorData.g2, self.j2_temp)
+            self.v3temp1 = np.cross(sensorData.g1.raw.current, self.j1_temp)
+            self.v3temp2 = np.cross(sensorData.g2.raw.current, self.j2_temp)
 
         c1 = np.linalg.norm(self.v3temp1)
         c2 = np.linalg.norm(self.v3temp2)
@@ -114,11 +120,11 @@ class ErrorFunction(GradientDescent):
         if x:
             j1_temp = x.vector1.toRectangular()
             j2_temp = x.vector2.toRectangular()
-            c1 = j1_temp.dot(sensorData.a1)
-            c2 = j2_temp.dot(sensorData.a2) 
+            c1 = j1_temp.dot(sensorData.a1.raw.current)
+            c2 = j2_temp.dot(sensorData.a2.raw.current) 
         else:
-            c1 = self.j1_temp.dot(sensorData.a1)
-            c2 = self.j2_temp.dot(sensorData.a2)       
+            c1 = self.j1_temp.dot(sensorData.a1.raw.current)
+            c2 = self.j2_temp.dot(sensorData.a2.raw.current)       
         
         return Constants.wACCEL * (c1 - c2)
     

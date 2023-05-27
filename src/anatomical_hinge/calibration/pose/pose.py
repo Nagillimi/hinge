@@ -5,7 +5,6 @@ from motion_data import MotionData
 from pose.error_function import ErrorFunction
 from solution_set import SolutionSet
 from axis.axis import AxisCalibration
-from sensor_collection import SensorCollection
 
 # calculates the o vectors
 class PoseCalibration(ErrorFunction):

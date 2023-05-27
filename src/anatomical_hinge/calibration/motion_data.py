@@ -1,12 +1,14 @@
-from kinematics import KinematicState
+from kinematics import Kinematic
 from sensor_collection import SensorCollection
 
 class MotionData:
     def __init__(self) -> None:
         self.sensorData = [SensorCollection()]
-        self.kinematicState = [KinematicState()]
+        
+        # recognize data signals and assign kinematic status
+        self.kinematic = Kinematic()
 
 
-    def update(self, sensorData: SensorCollection, kinematicState: KinematicState):
+    def update(self, sensorData: SensorCollection):
         self.sensorData.append(sensorData)
-        self.kinematicState.append(kinematicState)
+        self.kinematic.update(sensorData)

@@ -9,6 +9,12 @@ class HistoricNumber:
         self.past2   = self.past
         self.past    = self.current
         self.current = newNumber
+
+    def delta(self):
+        return self.current - self.past
+    
+    def delta2(self):
+        return self.current - self.past2
         
 
 class HistoricPoint:
@@ -22,11 +28,18 @@ class HistoricPoint:
         self.y.shift(newPoint[1])
         self.z.shift(newPoint[2])
 
-    def current(self) -> list[float]:
+    def current(self):
         return [self.x.current, self.y.current, self.z.current]
 
-    def past(self) -> list[float]:
+    def past(self):
         return [self.x.past, self.y.past, self.z.past]
 
-    def past2(self) -> list[float]:
+    def past2(self):
         return [self.x.past2, self.y.past2, self.z.past2]
+
+    def delta(self):
+        return [self.x.delta, self.y.delta, self.z.delta]
+    
+    def delta2(self):
+        return [self.x.delta2, self.y.delta2, self.z.delta2]
+    

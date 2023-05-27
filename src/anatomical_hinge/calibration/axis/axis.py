@@ -6,24 +6,19 @@ from calibration.x_sphere import XSphere
 from calibration.solution_set import SolutionSet
 from sensor_collection import SensorCollection
 from error_function import ErrorFunction
-from kinematics import Kinematic
 
 # calculates the j vectors
 class AxisCalibration(ErrorFunction):
     def __init__(self):
         super().__init__()
 
-        # recognize data signals and assign kinematic status
-        self.kinematic = Kinematic()
-
 
     # Run calibration based on new sensor data from the collection
     def update(self, collection: SensorCollection) -> Union[CalibrationResult, KinematicResult]:
-        self.kinematic.update(collection)
-        self.motionData.update(collection, self.kinematic.stateBuffer[-1].state)
+        self.motionData.update(collection)
 
         # only run calibration on signals with consistent motion
-        motionTest = self.kinematic.testForConsecutive()
+        motionTest = self.motionData.kinematic.testForConsecutive()
         if motionTest != KinematicResult.CONSECUTIVE_MOTION_DETECTED:
             return motionTest
         

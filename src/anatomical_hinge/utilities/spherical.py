@@ -13,8 +13,8 @@ class SphericalCoordinate:
     # into rectangular coords. Convection follows implementation from the 2020
     # article from Thomas Seel: https://www.mdpi.com/1424-8220/20/12/3534
     def toRectangular(self):
-        return np.array([
+        return [
             math.cos(self.theta) * math.cos(self.phi),
             math.cos(self.phi) * math.sin(self.theta),
             math.sin(self.phi)
-        ])
+        ]

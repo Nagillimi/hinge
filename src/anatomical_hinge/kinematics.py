@@ -26,7 +26,7 @@ class Kinematic:
 
     def __init__(self) -> None:
         # self.motionBuffer = [(KinematicState, int)]
-        self.stateBuffer = [StateBuffer()]
+        self.buffer = [StateBuffer()]
 
 
     def update(self, collection: SensorCollection) -> None:
@@ -36,7 +36,7 @@ class Kinematic:
         G2 = np.linalg.norm(collection.g2.raw.current)
 
         # test motion index & push
-        self.stateBuffer.append(StateBuffer(
+        self.buffer.append(StateBuffer(
             self.getInstantState(A1, A2, G1, G2),
             collection.a1.ts
         ))
@@ -60,15 +60,15 @@ class Kinematic:
 
     # Test if consecutive over required time amount
     def testForConsecutive(self) -> KinematicResult:
-        if self.stateBuffer[-1].ts == KinematicState.MOTION:
-            if self.stateBuffer[-1][-1] - self.stateBuffer[0][-1] >= Kinematic.CONSECUTIVE_MOTION_TIME_MS:
-                self.stateBuffer.pop(0)
+        if self.buffer[-1].ts == KinematicState.MOTION:
+            if self.buffer[-1][-1] - self.buffer[0][-1] >= Kinematic.CONSECUTIVE_MOTION_TIME_MS:
+                self.buffer.pop(0)
                 return KinematicResult.CONSECUTIVE_MOTION_DETECTED
             return KinematicResult.MOTION_DETECTED
         
-        if self.stateBuffer[-1][0] == KinematicState.STILL:
-            if self.stateBuffer[-1][-1] - self.stateBuffer[0][-1] >= Kinematic.CONSECUTIVE_STILLNESS_TIME_MS:
-                self.stateBuffer.pop(0)
+        if self.buffer[-1][0] == KinematicState.STILL:
+            if self.buffer[-1][-1] - self.buffer[0][-1] >= Kinematic.CONSECUTIVE_STILLNESS_TIME_MS:
+                self.buffer.pop(0)
                 return KinematicResult.CONSECUTIVE_STILLNESS_DETECTED
             return KinematicResult.STILLNESS_DETECTED
         

@@ -41,7 +41,7 @@ class AnatomicalHinge:
         elif self.state == State.CALIBRATING:
             self.status = self.calibrate()
         elif self.state == State.RUN:
-            self.status = self.update()
+            self.status = self.run()
 
         return self.hingeJoint.combinedAngle
     
@@ -78,6 +78,7 @@ class AnatomicalHinge:
             self.poseCalibration.setAxis(self.axisCalibration)
             self.poseCalibration.update(self.axisCalibration.motionData)
             self.hingeJoint.setCalibration(self.axisCalibration, self.poseCalibration)
+            self.hingeJoint.setCoordinateSystem()
             self.state += 1
         return result
 
