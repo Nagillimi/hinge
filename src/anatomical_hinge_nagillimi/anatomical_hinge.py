@@ -20,7 +20,7 @@ class AnatomicalHinge:
         self.axisCalibration = AxisCalibration()
         self.poseCalibration = PoseCalibration()
         self.hingeJoint = HingeJoint()
-        self.status = Status()
+        self.status = Status
         self.state = State()
         # self.mappedOperation: Status = {
         #     State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(),
