@@ -1,3 +1,4 @@
+from typing import Union
 from constants import Constants
 from data import Data
 from details import Details
@@ -7,8 +8,9 @@ from joint import HingeJoint
 from calibration.axis.axis import AxisCalibration
 from calibration.pose.pose import PoseCalibration
 from result.calibration_result import CalibrationResult
+from result.joint_result import HingeJointResult
+from result.kinematics_result import KinematicResult
 from result.temporal_result import TemporalResult
-from result.result import Status
 from kinematics import Kinematic
 from utilities.temporal import DetectDownsampling
 
@@ -20,7 +22,7 @@ class AnatomicalHinge:
         self.axisCalibration = AxisCalibration()
         self.poseCalibration = PoseCalibration()
         self.hingeJoint = HingeJoint()
-        self.status = Status
+        self.status = Union[CalibrationResult, HingeJointResult, KinematicResult, TemporalResult]
         self.state = State()
         # self.mappedOperation: Status = {
         #     State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(),
