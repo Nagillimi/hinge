@@ -3,7 +3,7 @@ requires = ["hatchling", "numpy >= 1.24.3"]
 build-backend = "hatchling.build"
 
 [project]
-name = "anatomical_hinge"
+name = "anatomical_hinge_nagillimi"
 version = "0.0.1"
 authors = [
   { name="Benjamin Milligan", email="bmilligan9@outlook.com" },

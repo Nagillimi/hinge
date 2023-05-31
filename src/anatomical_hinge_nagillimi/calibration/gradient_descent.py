@@ -1,7 +1,7 @@
 import numpy as np
-from anatomical_hinge.calibration.solution_set import SolutionSet
 from constants import Constants
-from x_sphere import XSphere
+from calibration.solution_set import SolutionSet
+from calibration.x_sphere import XSphere
 from calibration.motion_data import MotionData
 
 class GradientDescent:

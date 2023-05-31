@@ -1,11 +1,11 @@
 from typing import Union
 from constants import Constants
+from sensor_collection import SensorCollection
 from result.kinematics_result import KinematicResult
 from result.calibration_result import CalibrationResult
 from calibration.x_sphere import XSphere
 from calibration.solution_set import SolutionSet
-from sensor_collection import SensorCollection
-from error_function import ErrorFunction
+from calibration.axis.error_function import ErrorFunction
 
 # calculates the j vectors
 class AxisCalibration(ErrorFunction):

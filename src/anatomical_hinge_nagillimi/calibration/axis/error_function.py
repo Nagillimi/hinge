@@ -1,6 +1,6 @@
 from typing import Optional
 import numpy as np
-from gradient_descent import GradientDescent
+from calibration.gradient_descent import GradientDescent
 from calibration.x_sphere import XSphere
 from constants import Constants
 

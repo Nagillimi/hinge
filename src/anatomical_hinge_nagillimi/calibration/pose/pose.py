@@ -1,10 +1,10 @@
 import numpy as np
 from calibration.x_sphere import XSphere
 from constants import Constants
-from motion_data import MotionData
-from pose.error_function import ErrorFunction
-from solution_set import SolutionSet
-from axis.axis import AxisCalibration
+from calibration.motion_data import MotionData
+from calibration.pose.error_function import ErrorFunction
+from calibration.solution_set import SolutionSet
+from calibration.axis.axis import AxisCalibration
 
 # calculates the o vectors
 class PoseCalibration(ErrorFunction):
