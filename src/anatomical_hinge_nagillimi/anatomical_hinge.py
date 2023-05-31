@@ -59,7 +59,7 @@ class AnatomicalHinge:
 
 
     # Call outside of calibration to detect the incoming avg data stream latency
-    def detectDownsamplingIndex(self) -> Status:
+    def detectDownsamplingIndex(self) -> TemporalResult:
         result = self.detectDownsampling.update(self.collection.a1.ts)
         print(result.value)
         if result == TemporalResult.OPTIMAL:
@@ -72,7 +72,7 @@ class AnatomicalHinge:
     # if return true, set the j vectors in the o vector class
     # run pose estimtation (one & done)
     # set the j & o vectors to the angle class
-    def calibrate(self) -> Status:
+    def calibrate(self) -> Union[CalibrationResult, KinematicResult]:
         result = self.axisCalibration.update(self.collection)
         print(result.value)
         if result == CalibrationResult.SUCCESS:
@@ -86,7 +86,7 @@ class AnatomicalHinge:
 
 
     # Normal run call for calculating the anatomical hinge joint
-    def run(self) -> Status:
+    def run(self) -> Union[HingeJointResult, KinematicResult]:
         result = self.hingeJoint.update(self.collection)
         print(result.value)
         return result
