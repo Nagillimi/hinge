@@ -1,7 +1,6 @@
-
-from constants import Constants
-from result.temporal_result import TemporalResult
-from statistics import mean
+import numpy as np
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.result.temporal_result import TemporalResult
 
 class DetectDownsampling:
     def __init__(self, sampleCount = 10, msLatencyTol = 0.1):
@@ -19,7 +18,7 @@ class DetectDownsampling:
     def update(self, ts: int) -> TemporalResult:
         self.tsBuffer.append(ts)
         if self.tsBuffer.count == self.sampleCount:
-            self.avgLatency = mean(self.tsBuffer)
+            self.avgLatency = np.average(self.tsBuffer)
             return self.compute()
         else:
             return TemporalResult.NOT_ENOUGH_SAMPLES

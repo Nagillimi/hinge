@@ -1,11 +1,11 @@
 from typing import Union
-from constants import Constants
-from sensor_collection import SensorCollection
-from result.kinematics_result import KinematicResult
-from result.calibration_result import CalibrationResult
-from calibration.x_sphere import XSphere
-from calibration.solution_set import SolutionSet
-from calibration.axis.error_function import ErrorFunction
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
+from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
+from anatomical_hinge_nagillimi.result.calibration_result import CalibrationResult
+from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
+from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
+from anatomical_hinge_nagillimi.calibration.axis.error_function import ErrorFunction
 
 # calculates the j vectors
 class AxisCalibration(ErrorFunction):

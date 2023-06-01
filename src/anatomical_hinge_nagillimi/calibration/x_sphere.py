@@ -1,7 +1,7 @@
 import math
 from typing import Optional
 import numpy as np
-from utilities.spherical import SphericalCoordinate
+from anatomical_hinge_nagillimi.utilities.spherical import SphericalCoordinate
 
 class XSphere:
     def __get_vector1(self) -> SphericalCoordinate:

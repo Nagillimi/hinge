@@ -1,5 +1,5 @@
-from data import Data
-from sensor import Sensor, SensorType
+from anatomical_hinge_nagillimi.data import Data
+from anatomical_hinge_nagillimi.sensor import Sensor, SensorType
 
 class SensorCollection:
     def __init__(self) -> None:

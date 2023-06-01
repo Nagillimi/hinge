@@ -1,10 +1,10 @@
 import numpy as np
-from calibration.x_sphere import XSphere
-from constants import Constants
-from calibration.motion_data import MotionData
-from calibration.pose.error_function import ErrorFunction
-from calibration.solution_set import SolutionSet
-from calibration.axis.axis import AxisCalibration
+from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
+from anatomical_hinge_nagillimi.calibration.pose.error_function import ErrorFunction
+from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
+from anatomical_hinge_nagillimi.calibration.axis.axis import AxisCalibration
 
 # calculates the o vectors
 class PoseCalibration(ErrorFunction):

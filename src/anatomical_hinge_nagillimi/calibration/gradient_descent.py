@@ -1,8 +1,8 @@
 import numpy as np
-from constants import Constants
-from calibration.solution_set import SolutionSet
-from calibration.x_sphere import XSphere
-from calibration.motion_data import MotionData
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
+from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
+from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
 
 class GradientDescent:
     def __init__(self):
@@ -14,28 +14,28 @@ class GradientDescent:
 
         # Residual errors for gyro and accel, e(x)
         # [(2)Nx1]
-        self.err = [float()]
+        self.err = [float]
 
         # Working sum of squares error
         #
         # [1] (used as [N] for threshold calc)
-        self.sumOfSquares = [float()]
+        self.sumOfSquares = [float]
 
         # Working solutions throughout algorithm iterations.
         #
         # [4xN]
-        self.x = [XSphere()]
+        self.x = [XSphere]
 
         # Combined gyro & accel polar gradient (jacobian) for gradient descent.
         #
         # [2Nx4] & [Nx4] for axis & pose calibrations respectively.
-        self.jac = [[float()]]
+        self.jac = [[float]]
 
         # Transpose of the combined gyro & accel polar gradient (jacobian) for
         # gradient descent.
         #
         # [4x2N] & [4xN] for axis & pose calibrations respectively.
-        self.jacT = [[float()]]
+        self.jacT = [[float]]
 
         # Hessian matrix (square), H = inv(Jac^T(x) * Jac(x))
         # 
@@ -66,7 +66,7 @@ class GradientDescent:
         self.v3temp4 = np.zeros(shape=(1, 3))
 
         # single solution collection for the position algorithm convergence
-        self.sols = [SolutionSet()]
+        self.sols = [SolutionSet]
 
     # Updates the step direction based on the polar gradient and residual errors.
     def updateStepDirection(self):

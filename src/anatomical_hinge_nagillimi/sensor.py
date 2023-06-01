@@ -1,5 +1,5 @@
-from utilities.historic import HistoricPoint, HistoricNumber
 from enum import Enum
+from anatomical_hinge_nagillimi.utilities.historic import HistoricPoint, HistoricNumber
 
 class SensorType(Enum):
     Accelerometer = 'Accelerometer'

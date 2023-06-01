@@ -1,4 +1,4 @@
-from calibration.x_sphere import XSphere
+from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
 
 class SolutionSet:
     def __init__(

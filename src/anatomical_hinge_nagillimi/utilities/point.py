@@ -1,5 +1,6 @@
-
 class Point:
-    x = 0
-    y = 0
-    z = 0
+    def __init__(self) -> None:
+        self.x = 0
+        self.y = 0
+        self.z = 0
+    

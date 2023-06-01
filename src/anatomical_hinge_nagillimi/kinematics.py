@@ -1,8 +1,8 @@
 from enum import Enum
 import numpy as np
-from sensor_collection import SensorCollection
-from constants import Constants
-from result.kinematics_result import KinematicResult
+from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
 
 class KinematicState(Enum):
     MOTION = 1
@@ -26,7 +26,7 @@ class Kinematic:
 
     def __init__(self) -> None:
         # self.motionBuffer = [(KinematicState, int)]
-        self.buffer = [StateBuffer()]
+        self.buffer = [StateBuffer]
 
 
     def update(self, collection: SensorCollection) -> None:

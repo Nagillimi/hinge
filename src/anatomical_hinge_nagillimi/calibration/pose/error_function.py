@@ -1,7 +1,7 @@
 from typing import Optional
 import numpy as np
-from calibration.gradient_descent import GradientDescent
-from calibration.x_sphere import XSphere
+from anatomical_hinge_nagillimi.calibration.gradient_descent import GradientDescent
+from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
 
 class ErrorFunction(GradientDescent):
     def __init__(self):

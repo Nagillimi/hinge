@@ -1,9 +1,9 @@
-from kinematics import Kinematic
-from sensor_collection import SensorCollection
+from anatomical_hinge_nagillimi.kinematics import Kinematic
+from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
 
 class MotionData:
     def __init__(self) -> None:
-        self.sensorData = [SensorCollection()]
+        self.sensorData = [SensorCollection]
         
         # recognize data signals and assign kinematic status
         self.kinematic = Kinematic()

@@ -1,14 +1,14 @@
 import math
 from typing import Union
 import numpy as np
-from calibration.motion_data import MotionData
-from result.kinematics_result import KinematicResult
-from utilities.historic import HistoricNumber
-from sensor_collection import SensorCollection
-from constants import Constants
-from result.joint_result import HingeJointResult
-from calibration.axis.axis import AxisCalibration
-from calibration.pose.pose import PoseCalibration
+from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
+from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
+from anatomical_hinge_nagillimi.utilities.historic import HistoricNumber
+from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
+from anatomical_hinge_nagillimi.constants import Constants
+from anatomical_hinge_nagillimi.result.joint_result import HingeJointResult
+from anatomical_hinge_nagillimi.calibration.axis.axis import AxisCalibration
+from anatomical_hinge_nagillimi.calibration.pose.pose import PoseCalibration
 
 class HingeJoint:
     def __init__(self):
@@ -20,7 +20,7 @@ class HingeJoint:
 
         # Initial condition variables
         self.areInitialConditionsSet = False
-        self.tempBuffer = [float()]
+        self.tempBuffer = [float]
 
         # JCS vectors
         self.x1 = np.zeros(shape=(1, 3))

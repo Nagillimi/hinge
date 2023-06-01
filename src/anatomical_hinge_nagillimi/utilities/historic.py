@@ -1,4 +1,3 @@
-
 class HistoricNumber:
     def __init__(self) -> None:
         self.current: float = 0.0
