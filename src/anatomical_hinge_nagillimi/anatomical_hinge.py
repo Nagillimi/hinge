@@ -23,7 +23,7 @@ class AnatomicalHinge:
         self.poseCalibration = PoseCalibration()
         self.hingeJoint = HingeJoint()
         self.status = Union[CalibrationResult, HingeJointResult, KinematicResult, TemporalResult]
-        self.state = State()
+        self.state = State(1)
         # self.mappedOperation: Status = {
         #     State.DETECT_DOWNSAMPLING_INDEX : self.detectDownsamplingIndex(),
         #     State.CALIBRATING               : self.calibrate(),
@@ -45,12 +45,12 @@ class AnatomicalHinge:
         elif self.state == State.RUN:
             self.status = self.run()
 
-        return self.hingeJoint.combinedAngle
+        return self.hingeJoint.combinedAngle.current
     
 
     # Reports the current status string (enumeration)
     def getStatusString(self) -> str:
-        return self.status.value
+        return str(self.status.value)
     
 
     # Reports the current details of the algorithm as a JSON string

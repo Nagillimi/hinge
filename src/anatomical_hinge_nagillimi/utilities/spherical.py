@@ -1,10 +1,7 @@
 import math
 
 class SphericalCoordinate:
-    theta: float = 0.0
-    phi: float = 0.0
-
-    def __init__(self, theta, phi) -> None:
+    def __init__(self, theta: float, phi: float):
         self.theta = theta
         self.phi = phi
 

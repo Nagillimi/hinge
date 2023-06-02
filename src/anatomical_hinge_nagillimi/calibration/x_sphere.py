@@ -1,33 +1,17 @@
 import math
-from typing import Optional
-import numpy as np
+import random
 from anatomical_hinge_nagillimi.utilities.spherical import SphericalCoordinate
 
 class XSphere:
-    def __get_vector1(self) -> SphericalCoordinate:
-        return self.vector1
-    
-    # def _set_imu1(self, t1 = Optional[float], p1 = Optional[float]):
-    #     self.imu1 = SphericalCoordinate(t1 or np.random(), p1 or np.random())
-    
-    def __get_vector2(self) -> SphericalCoordinate:
-        return self.vector2
-    
-    # def _set_imu2(self, t2 = Optional[float], p2 = Optional[float]):
-    #     self.imu2 = SphericalCoordinate(t2 or np.random(), p2 or np.random())
-
-    vector1: SphericalCoordinate = property(__get_vector1) # , _set_imu1)
-    vector2: SphericalCoordinate = property(__get_vector2) # , _set_imu2)
-
     def __init__(
             self,
-            t1 = Optional[float],
-            p1 = Optional[float],
-            t2 = Optional[float],
-            p2 = Optional[float]
+            t1 = random.random(),
+            p1 = random.random(),
+            t2 = random.random(),
+            p2 = random.random()
     ):
-        self.vector1 = SphericalCoordinate(t1 or np.random(), p1 or np.random())
-        self.vector2 = SphericalCoordinate(t2 or np.random(), p2 or np.random())
+        self.vector1 = SphericalCoordinate(t1, p1)
+        self.vector2 = SphericalCoordinate(t2, p2)
 
 
     # Returns contents of non-iterable x as an iterable list
