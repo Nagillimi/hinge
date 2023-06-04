@@ -11,11 +11,18 @@ from anatomical_hinge_nagillimi.calibration.axis.error_function import ErrorFunc
 class AxisCalibration(ErrorFunction):
     def __init__(self):
         super().__init__()
+        self.isInitialized = False
 
 
     # Run calibration based on new sensor data from the collection
     def update(self, collection: SensorCollection) -> Union[CalibrationResult, KinematicResult]:
         self.motionData.update(collection)
+
+        # get the first sse
+        if self.isInitialized is False:
+            self.updateSumOfSquaresError()
+            self.isInitialized = True
+            return CalibrationResult.INITIALIZED
 
         # only run calibration on signals with consistent motion
         motionTest = self.motionData.kinematic.testForConsecutive()
@@ -53,11 +60,14 @@ class AxisCalibration(ErrorFunction):
         # update cost function
         self.updateSumOfSquaresError()
 
-        if (self.sumOfSquares[-1] - self.sumOfSquares[-2]) < Constants.MAXIMUM_AXIS_COST_ROC_THRESHOLD:
+        dvSOS = self.sumOfSquares[-1] - self.sumOfSquares[-2]
+        # print("SSE =", self.sumOfSquares[-1])
+        print("dvSOS =", dvSOS)
+        if dvSOS < Constants.MAXIMUM_AXIS_COST_ROC_THRESHOLD:
             # add good data to sols array
             self.sols.append(SolutionSet(
                 vSOS  = self.sumOfSquares[-1],
-                dvSOS = self.sumOfSquares[-1] - self.sumOfSquares[-2],
+                dvSOS = dvSOS,
                 x     = self.x[-1]
             ))
 

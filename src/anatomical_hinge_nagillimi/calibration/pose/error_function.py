@@ -68,20 +68,20 @@ class ErrorFunction(GradientDescent):
         # single accel-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
         # inserted at the end of the jacbian row index (N)
         self.jac.append(
-            np.matmul(do_dx, np.vstack(de_do1, de_do2))# * Constants.wACCEL
+            np.matmul(do_dx, np.vstack((de_do1.transpose(), de_do2.transpose())))# * Constants.wACCEL
         )
         self.jacT.append(
-            np.matmul(do_dx, np.hstack(de_do1, de_do2))# * Constants.wACCEL
+            np.matmul(do_dx, np.hstack((de_do1, de_do2)))# * Constants.wACCEL
         )
 
 
     # Gets the current iteration of the sum of squares error
     # if x is passed, enter search mode which returns a use case
-    def getSumSquaresError(self, x = Optional[XSphere]) -> float:
+    def getSumSquaresError(self, x: Optional[XSphere] = None) -> float:
         return sum(self.sumOfSquares) + (self.getIMU1Error(x) - self.getIMU2Error(x))**2
 
 
-    def getIMU1Error(self, x = Optional[XSphere]) -> float:
+    def getIMU1Error(self, x: Optional[XSphere] = None) -> float:
         sensorData = self.motionData.sensorData[-1]
         o1 = self.o1_temp
         if x:
@@ -92,7 +92,7 @@ class ErrorFunction(GradientDescent):
         return np.linalg.norm(error)
 
 
-    def getIMU2Error(self, x = Optional[XSphere]) -> float:
+    def getIMU2Error(self, x: Optional[XSphere] = None) -> float:
         sensorData = self.motionData.sensorData[-1]
         o2 = self.o2_temp
         if x:

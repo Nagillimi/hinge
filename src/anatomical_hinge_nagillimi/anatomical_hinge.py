@@ -61,7 +61,7 @@ class AnatomicalHinge:
     # Call outside of calibration to detect the incoming avg data stream latency
     def detectDownsamplingIndex(self) -> TemporalResult:
         result = self.detectDownsampling.update(self.collection.a1.ts.current)
-        print(result.value)
+        # print(result.value)
         if result != TemporalResult.NOT_ENOUGH_SAMPLES:
             Constants.ALGORITHM_DOWNSAMPLING_INDEX = self.detectDownsampling.index
             self.state = State.CALIBRATING
@@ -74,7 +74,7 @@ class AnatomicalHinge:
     # set the j & o vectors to the angle class
     def calibrate(self) -> Union[CalibrationResult, KinematicResult]:
         result = self.axisCalibration.update(self.collection)
-        print(result.value)
+        # print(result.value)
         if result == CalibrationResult.SUCCESS:
             # set the same motion data for pose calibration
             self.poseCalibration.setAxis(self.axisCalibration)

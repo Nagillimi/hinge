@@ -7,35 +7,35 @@ from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
 class GradientDescent:
     def __init__(self):
         # Working iteration index
-        self.k = 0
+        self.k = int(0)
 
         # Solution iteration index
-        self.s = 0
+        self.s = int(0)
 
         # Residual errors for gyro and accel, e(x)
         # [(2)Nx1]
-        self.err = [float]
+        self.err = []
 
         # Working sum of squares error
         #
         # [1] (used as [N] for threshold calc)
-        self.sumOfSquares = [float]
+        self.sumOfSquares = []
 
         # Working solutions throughout algorithm iterations.
-        #
+        # List not delcared emply, since there needs to be an initial guess
         # [4xN]
-        self.x = [XSphere]
+        self.x = [XSphere()]
 
         # Combined gyro & accel polar gradient (jacobian) for gradient descent.
         #
         # [2Nx4] & [Nx4] for axis & pose calibrations respectively.
-        self.jac = [[float]]
+        self.jac = []
 
         # Transpose of the combined gyro & accel polar gradient (jacobian) for
         # gradient descent.
         #
         # [4x2N] & [4xN] for axis & pose calibrations respectively.
-        self.jacT = [[float]]
+        self.jacT = []
 
         # Hessian matrix (square), H = inv(Jac^T(x) * Jac(x))
         # 
@@ -48,7 +48,7 @@ class GradientDescent:
         self.stepDir = XSphere()
 
         # Step length based on the backtracking line search
-        self.stepSize: float = 0.0
+        self.stepSize = 0.0
 
         # The derivative of the error at the current iteration, i.e. the new jacobian row(s).
         # de_dx = d(j | o)_dx * de_d(j | o)
@@ -66,7 +66,7 @@ class GradientDescent:
         self.v3temp4 = np.zeros(shape=(1, 3))
 
         # single solution collection for the position algorithm convergence
-        self.sols = [SolutionSet]
+        self.sols = []
 
     # Updates the step direction based on the polar gradient and residual errors.
     def updateStepDirection(self):
@@ -81,8 +81,7 @@ class GradientDescent:
             t1 = stepDirAsMatrix[0],
             p1 = stepDirAsMatrix[1],
             t2 = stepDirAsMatrix[2],
-            p2 = stepDirAsMatrix[3]
-        )
+            p2 = stepDirAsMatrix[3])
 
 
     # Updates the step length in a Gauss-Newton gradient descent algorithm using 
@@ -92,7 +91,9 @@ class GradientDescent:
     # error data
     def updateStepSize(self, getSumOfSquaresError):
         # gradient for BLS, "the change in vSOS" from the 2020 paper
-        gradient = self.sumOfSquares[-1] - self.sumOfSquares[-2]
+        gradient = self.sumOfSquares[-1]
+        if len(self.sumOfSquares) > 1:
+            gradient = self.sumOfSquares[-1] - self.sumOfSquares[-2]
 
         # recompute gradient on first case, k = 0
         if(self.k is 0):
