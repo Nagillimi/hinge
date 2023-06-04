@@ -4,7 +4,7 @@ from anatomical_hinge_nagillimi.result.temporal_result import TemporalResult
 
 class DetectDownsampling:
     def __init__(self, sampleCount = 10, msLatencyTol = 0.1):
-        self.tsBuffer = [int]
+        self.tsBuffer = []
         self.k = 0
         self.index = 0
         self.avgLatency = 0
@@ -17,7 +17,7 @@ class DetectDownsampling:
 
     def update(self, ts: int) -> TemporalResult:
         self.tsBuffer.append(ts)
-        if self.tsBuffer.count == self.sampleCount:
+        if len(self.tsBuffer) == self.sampleCount:
             self.avgLatency = np.average(self.tsBuffer)
             return self.compute()
         else:

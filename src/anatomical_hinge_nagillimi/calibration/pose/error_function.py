@@ -48,19 +48,19 @@ class ErrorFunction(GradientDescent):
 
         # construct the de_do's
         de_do1 = self.getRadialAndTangentialAcceleration(
-            sensorData.g1.raw.current,
-            sensorData.a1.raw.current - self.getRadialAndTangentialAcceleration(
-                sensorData.g1.raw.current, self.o1_temp, sensorData.g1.deriv.current
+            sensorData.g1.raw.current(),
+            sensorData.a1.raw.current() - self.getRadialAndTangentialAcceleration(
+                sensorData.g1.raw.current(), self.o1_temp, sensorData.g1.deriv.current()
             ),
-            sensorData.g1.deriv.current
+            sensorData.g1.deriv.current()
         )
         de_do1 / np.linalg.norm(de_do1)
         de_do2 = self.getRadialAndTangentialAcceleration(
-            sensorData.g2.raw.current,
-            sensorData.a2.raw.current - self.getRadialAndTangentialAcceleration(
-                sensorData.g2.raw.current, self.o2_temp, sensorData.g2.deriv.current
+            sensorData.g2.raw.current(),
+            sensorData.a2.raw.current() - self.getRadialAndTangentialAcceleration(
+                sensorData.g2.raw.current(), self.o2_temp, sensorData.g2.deriv.current()
             ),
-            sensorData.g2.deriv.current
+            sensorData.g2.deriv.current()
         )
         de_do2 / np.linalg.norm(de_do2)
 
@@ -86,8 +86,8 @@ class ErrorFunction(GradientDescent):
         o1 = self.o1_temp
         if x:
             o1 = x.vector1.toRectangular()
-        error = np.array(sensorData.a1.raw.current) - self.getRadialAndTangentialAcceleration(
-            sensorData.g1.raw.current, o1, sensorData.g1.deriv.current
+        error = np.array(sensorData.a1.raw.current()) - self.getRadialAndTangentialAcceleration(
+            sensorData.g1.raw.current(), o1, sensorData.g1.deriv.current()
         )
         return np.linalg.norm(error)
 
@@ -97,8 +97,8 @@ class ErrorFunction(GradientDescent):
         o2 = self.o2_temp
         if x:
             o2 = x.vector2.toRectangular()
-        error = np.array(sensorData.a2.raw.current) - self.getRadialAndTangentialAcceleration(
-            sensorData.g2.raw.current, o2, sensorData.g2.deriv.current
+        error = np.array(sensorData.a2.raw.current()) - self.getRadialAndTangentialAcceleration(
+            sensorData.g2.raw.current(), o2, sensorData.g2.deriv.current()
         )
         return np.linalg.norm(error)
         

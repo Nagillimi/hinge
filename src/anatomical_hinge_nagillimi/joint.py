@@ -65,16 +65,16 @@ class HingeJoint:
 
     def updateAccelBasedAngle(self):
         sensorData = self.motionData.sensorData[-1]
-        a1 = np.array(sensorData.a1.raw.current) - (
-            np.cross(sensorData.g1.raw.current, np.cross(sensorData.g1.raw.current, self.o1))
-            + np.cross(sensorData.g1.deriv.current, self.o1)
+        a1 = np.array(sensorData.a1.raw.current()) - (
+            np.cross(sensorData.g1.raw.current(), np.cross(sensorData.g1.raw.current(), self.o1))
+            + np.cross(sensorData.g1.deriv.current(), self.o1)
         )
         a1 = a1 / np.linalg.norm(a1)
         a1_2d = [np.dot(a1, self.x1), np.dot(a1, self.y1)]
         
-        a2 = np.array(sensorData.a2.raw.current) - (
-            np.cross(sensorData.g2.raw.current, np.cross(sensorData.g2.raw.current, self.o2))
-            + np.cross(sensorData.g2.deriv.current, self.o2)
+        a2 = np.array(sensorData.a2.raw.current()) - (
+            np.cross(sensorData.g2.raw.current(), np.cross(sensorData.g2.raw.current(), self.o2))
+            + np.cross(sensorData.g2.deriv.current(), self.o2)
         )
         a2 = a2 / np.linalg.norm(a2)
         a2_2d = [np.dot(a2, self.x2), np.dot(a2, self.y2)]
@@ -87,7 +87,7 @@ class HingeJoint:
         if Constants.USE_AVG_ACCEL_IC:
             self.tempBuffer.append(self.accelAngle)
 
-            if self.tempBuffer.count < Constants.NUM_SAMPLES_AVG_ACCEL_IC:
+            if len(self.tempBuffer) < Constants.NUM_SAMPLES_AVG_ACCEL_IC:
                 return HingeJointResult.SETTING_INITIAL_CONDITIONS
             
             self.gyroAngle = np.average(self.tempBuffer)
@@ -102,17 +102,17 @@ class HingeJoint:
     def updateGyroBasedAngle(self):
         sensorData = self.motionData.sensorData[-1]
         self.gyroIntegrand.shift(
-            np.dot(sensorData.g1.raw.current, self.j1)
-            - np.dot(sensorData.g2.raw.current, self.j2)
+            np.dot(sensorData.g1.raw.current(), self.j1)
+            - np.dot(sensorData.g2.raw.current(), self.j2)
         )
         self.gyroAngle.shift(
-            self.gyroAngle.past
-            + sensorData.a1.ts.delta * self.gyroIntegrand.delta / 2000
+            self.gyroAngle.past()
+            + sensorData.a1.ts.delta() * self.gyroIntegrand.delta() / 2000
         )
 
 
     def updateCombinedAngle(self):
         self.combinedAngle.shift(
             Constants.SENSOR_FUSION_WEIGHT * self.accelAngle
-            + (1 - Constants.SENSOR_FUSION_WEIGHT) * self.combinedAngle.past - self.gyroAngle.delta
+            + (1 - Constants.SENSOR_FUSION_WEIGHT) * self.combinedAngle.past() - self.gyroAngle.delta()
         )

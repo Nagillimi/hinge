@@ -26,19 +26,19 @@ class Kinematic:
 
     def __init__(self) -> None:
         # self.motionBuffer = [(KinematicState, int)]
-        self.buffer = [StateBuffer]
+        self.buffer = []
 
 
     def update(self, collection: SensorCollection) -> None:
-        A1 = np.linalg.norm(collection.a1.raw.current) - Constants.GRAVITY
-        A2 = np.linalg.norm(collection.a2.raw.current) - Constants.GRAVITY
-        G1 = np.linalg.norm(collection.g1.raw.current)
-        G2 = np.linalg.norm(collection.g2.raw.current)
+        A1 = np.linalg.norm(collection.a1.raw.current()) - Constants.GRAVITY
+        A2 = np.linalg.norm(collection.a2.raw.current()) - Constants.GRAVITY
+        G1 = np.linalg.norm(collection.g1.raw.current())
+        G2 = np.linalg.norm(collection.g2.raw.current())
 
         # test motion index & push
         self.buffer.append(StateBuffer(
             self.getInstantState(A1, A2, G1, G2),
-            collection.a1.ts
+            collection.a1.ts.current
         ))
 
 
@@ -60,14 +60,14 @@ class Kinematic:
 
     # Test if consecutive over required time amount
     def testForConsecutive(self) -> KinematicResult:
-        if self.buffer[-1].ts == KinematicState.MOTION:
-            if self.buffer[-1][-1] - self.buffer[0][-1] >= Kinematic.CONSECUTIVE_MOTION_TIME_MS:
+        if self.buffer[-1].state == KinematicState.MOTION:
+            if self.buffer[-1].ts - self.buffer[0].ts >= Kinematic.CONSECUTIVE_MOTION_TIME_MS:
                 self.buffer.pop(0)
                 return KinematicResult.CONSECUTIVE_MOTION_DETECTED
             return KinematicResult.MOTION_DETECTED
         
-        if self.buffer[-1][0] == KinematicState.STILL:
-            if self.buffer[-1][-1] - self.buffer[0][-1] >= Kinematic.CONSECUTIVE_STILLNESS_TIME_MS:
+        if self.buffer[-1].state == KinematicState.STILL:
+            if self.buffer[-1].ts - self.buffer[0].ts >= Kinematic.CONSECUTIVE_STILLNESS_TIME_MS:
                 self.buffer.pop(0)
                 return KinematicResult.CONSECUTIVE_STILLNESS_DETECTED
             return KinematicResult.STILLNESS_DETECTED

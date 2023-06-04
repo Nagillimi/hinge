@@ -60,11 +60,11 @@ class AnatomicalHinge:
 
     # Call outside of calibration to detect the incoming avg data stream latency
     def detectDownsamplingIndex(self) -> TemporalResult:
-        result = self.detectDownsampling.update(self.collection.a1.ts)
+        result = self.detectDownsampling.update(self.collection.a1.ts.current)
         print(result.value)
-        if result == TemporalResult.OPTIMAL:
+        if result != TemporalResult.NOT_ENOUGH_SAMPLES:
             Constants.ALGORITHM_DOWNSAMPLING_INDEX = self.detectDownsampling.index
-            self.state += 1
+            self.state = State.CALIBRATING
         return result
 
 
@@ -81,7 +81,7 @@ class AnatomicalHinge:
             self.poseCalibration.update(self.axisCalibration.motionData)
             self.hingeJoint.setCalibration(self.axisCalibration, self.poseCalibration)
             self.hingeJoint.setCoordinateSystem()
-            self.state += 1
+            self.state = State.RUN
         return result
 
 

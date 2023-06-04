@@ -37,8 +37,8 @@ class HistoricPoint:
         return [self.x.past2, self.y.past2, self.z.past2]
 
     def delta(self):
-        return [self.x.delta, self.y.delta, self.z.delta]
+        return [self.x.delta(), self.y.delta(), self.z.delta()]
     
     def delta2(self):
-        return [self.x.delta2, self.y.delta2, self.z.delta2]
+        return [self.x.delta2(), self.y.delta2(), self.z.delta2()]
     
