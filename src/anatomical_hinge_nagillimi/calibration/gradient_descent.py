@@ -76,12 +76,19 @@ class GradientDescent:
 
         # step dir = hessian * jacT * err
         # [4x1] = [4x4][4x(2)N][(2)Nx1]
-        stepDirAsMatrix = np.matmul(self.hessian, np.matmul(self.jacT, self.err))
+        jacTerr = np.matmul(self.jacT, self.err)
+        stepDirAsMatrix = np.matmul(self.hessian, jacTerr)
         self.stepDir = XSphere(
             t1 = stepDirAsMatrix[0],
             p1 = stepDirAsMatrix[1],
             t2 = stepDirAsMatrix[2],
             p2 = stepDirAsMatrix[3])
+        
+        print("GD iteration = [Hessian][JacT][e(x)] = {0} x ({1}, {2}) x ({3}, {4})".format(
+            self.hessian.shape, len(self.jacT), len(self.jacT[0]), len(self.err), 1))
+        print("\tHessian =", self.hessian)
+        print("\tJacT * e(x) = ", jacTerr)
+        print("GD step dir for x =", stepDirAsMatrix)
 
 
     # Updates the step length in a Gauss-Newton gradient descent algorithm using 
