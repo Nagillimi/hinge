@@ -1,7 +1,7 @@
 from enum import Enum
+from typing import List
 import numpy as np
 from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
-from anatomical_hinge_nagillimi.constants import Constants
 from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
 
 class KinematicState(Enum):
@@ -23,15 +23,15 @@ class Kinematic:
 
     ACCEL_MOTION_THRESHOLD = 0.05
     GYRO_MOTION_THRESHOLD = 0.75
-    CONSECUTIVE_MOTION_TIME_MS = 24
+    CONSECUTIVE_MOTION_TIME_MS = 100
 
     ACCEL_STILLNESS_THRESHOLD = 0.05
     GYRO_STILLNESS_THRESHOLD = 0.25
-    CONSECUTIVE_STILLNESS_TIME_MS = 96
+    CONSECUTIVE_STILLNESS_TIME_MS = 200
 
 
     def __init__(self) -> None:
-        self.buffer = []
+        self.buffer: List[StateBuffer] = []
 
 
     def update(self, collection: SensorCollection) -> None:

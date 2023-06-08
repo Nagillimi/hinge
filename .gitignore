@@ -1,3 +1,5 @@
 /dist
 __pycache__
 /results
+.venv
+/older-builds

@@ -1,14 +1,11 @@
 import math
-from typing import Union
 import numpy as np
 from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
-from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
+from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
 from anatomical_hinge_nagillimi.utilities.historic import HistoricNumber
 from anatomical_hinge_nagillimi.sensor_collection import SensorCollection
 from anatomical_hinge_nagillimi.constants import Constants
 from anatomical_hinge_nagillimi.result.joint_result import HingeJointResult
-from anatomical_hinge_nagillimi.calibration.axis.axis import AxisCalibration
-from anatomical_hinge_nagillimi.calibration.pose.pose import PoseCalibration
 
 class HingeJoint:
     def __init__(self):
@@ -20,9 +17,9 @@ class HingeJoint:
 
         # Initial condition variables
         self.areInitialConditionsSet = False
-        self.tempBuffer = [float]
+        self.tempBuffer = []
 
-        # JCS vectors
+        # # JCS vectors
         self.x1 = np.zeros(shape=(1, 3))
         self.y1 = np.zeros(shape=(1, 3))
         self.x2 = np.zeros(shape=(1, 3))
@@ -33,11 +30,11 @@ class HingeJoint:
 
 
     # Set past calibration j & o vectors
-    def setCalibration(self, axis: AxisCalibration, pose: PoseCalibration):
-        self.j1 = axis.sols[-1].x.vector1.toRectangular()
-        self.j2 = axis.sols[-1].x.vector2.toRectangular()
-        self.o1 = pose.sols[-1].x.vector1.toRectangular()
-        self.o2 = pose.sols[-1].x.vector2.toRectangular()
+    def setCalibration(self, axis: SolutionSet, pose: SolutionSet):
+        self.j1 = axis.x.vector1.toRectangular()
+        self.j2 = axis.x.vector2.toRectangular()
+        self.o1 = pose.x.vector1.toRectangular()
+        self.o2 = pose.x.vector2.toRectangular()
 
 
     # Set the joint coordinate system with c orthogonal to j1 & j2
@@ -49,18 +46,15 @@ class HingeJoint:
 
 
     # Update hinge joint angle based on current sensor data
-    def update(self, collection: SensorCollection) -> Union[HingeJointResult, KinematicResult]:
+    def update(self, collection: SensorCollection) -> HingeJointResult:
         self.motionData.update(collection)
-        self.updateAccelBasedAngle()
 
-        if not self.areInitialConditionsSet:
-            return self.setInitialConditions()
-        
+        self.updateAccelBasedAngle()
+        if not self.areInitialConditionsSet: return self.setInitialConditions()
         self.updateGyroBasedAngle()
         self.updateCombinedAngle()
 
-        # only return the instantaeneous state, not interested in overall motion
-        return self.motionData.kinematic.buffer[-1].state
+        return HingeJointResult.STREAMING
             
 
     def updateAccelBasedAngle(self):
@@ -90,13 +84,14 @@ class HingeJoint:
             if len(self.tempBuffer) < Constants.NUM_SAMPLES_AVG_ACCEL_IC:
                 return HingeJointResult.SETTING_INITIAL_CONDITIONS
             
-            self.gyroAngle = np.average(self.tempBuffer)
-            self.combinedAngle = np.average(self.tempBuffer)
+            avgIC = np.average(self.tempBuffer)
+            self.gyroAngle.shift(avgIC)
+            self.combinedAngle.shift(avgIC)
         else:
-            self.gyroAngle = self.accelAngle
-            self.combinedAngle = self.accelAngle
+            self.gyroAngle.shift(self.accelAngle)
+            self.combinedAngle.shift(self.accelAngle)
         self.areInitialConditionsSet = True
-        return HingeJointResult.SUCCESS
+        return HingeJointResult.INITIAL_CONDITIONS_SET
 
 
     def updateGyroBasedAngle(self):
@@ -106,7 +101,7 @@ class HingeJoint:
             - np.dot(sensorData.g2.raw.current(), self.j2)
         )
         self.gyroAngle.shift(
-            self.gyroAngle.past()
+            self.gyroAngle.past
             + sensorData.a1.ts.delta() * self.gyroIntegrand.delta() / 2000
         )
 
@@ -114,5 +109,5 @@ class HingeJoint:
     def updateCombinedAngle(self):
         self.combinedAngle.shift(
             Constants.SENSOR_FUSION_WEIGHT * self.accelAngle
-            + (1 - Constants.SENSOR_FUSION_WEIGHT) * self.combinedAngle.past() - self.gyroAngle.delta()
+            + (1 - Constants.SENSOR_FUSION_WEIGHT) * self.combinedAngle.past - self.gyroAngle.delta()
         )

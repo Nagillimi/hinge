@@ -1,8 +1,8 @@
 class HistoricNumber:
     def __init__(self) -> None:
-        self.current: float = 0.0
-        self.past: float    = 0.0
-        self.past2: float   = 0.0
+        self.current = 0.
+        self.past    = 0.
+        self.past2   = 0.
 
     def shift(self, newNumber: float):
         self.past2   = self.past

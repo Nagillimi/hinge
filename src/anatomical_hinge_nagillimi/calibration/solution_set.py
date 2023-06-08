@@ -3,15 +3,15 @@ from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
 class SolutionSet:
     def __init__(
             self,
-            vSOS: float,
-            dvSOS: float,
+            sumOfSquares: float,
+            derivSumOfSquares: float,
             x: XSphere
     ):
         # the converged accumulation of sum of squares error (cost)
-        self.vSOS = vSOS
+        self.sumOfSquares = sumOfSquares
 
         # the final derivative of the sum of squares error (dcost)
-        self.dvSOS = dvSOS
+        self.derivSumOfSquares = derivSumOfSquares
 
         # the converged solution set
         self.x = x

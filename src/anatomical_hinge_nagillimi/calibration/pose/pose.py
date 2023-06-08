@@ -4,29 +4,29 @@ from anatomical_hinge_nagillimi.constants import Constants
 from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
 from anatomical_hinge_nagillimi.calibration.pose.error_function import ErrorFunction
 from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
-from anatomical_hinge_nagillimi.calibration.axis.axis import AxisCalibration
+from anatomical_hinge_nagillimi.kinematics import Kinematic
+from anatomical_hinge_nagillimi.result.kinematics_result import KinematicResult
 
 # calculates the o vectors
 class PoseCalibration(ErrorFunction):
     def __init__(self):
         super().__init__()
 
-        # estimates for j1 & j2 found from the hinge joint axis algorithm
-        self.j1 = np.zeros(shape=(1, 3))
-        self.j2 = np.zeros(shape=(1, 3))
 
-        # scratch/temp variables, for saving storage
-        self.o1_temp = np.zeros(shape=(1, 3))
-        self.o2_temp = np.zeros(shape=(1, 3))
-
-
-    def setAxis(self, axis: AxisCalibration):
-        self.j1 = axis.sols[-1].j1
-        self.j2 = axis.sols[-1].j2
+    def setAxis(self, axisSolution: SolutionSet):
+        self.j1 = np.array(axisSolution.x.vector1.toRectangular())
+        self.j2 = np.array(axisSolution.x.vector2.toRectangular())
 
 
     def update(self, data: MotionData):
-        for _ in data.sensorData:
+        length = len(data.sensorData)
+        for newCollection in data.sensorData:
+            # update saved motion data by iteration
+            self.motionData.update(newCollection)
+
+            motionTest = data.kinematic.testForConsecutive()
+            if motionTest != KinematicResult.CONSECUTIVE_MOTION_DETECTED: continue
+
             # get current o vectors
             self.updatePoseVectors()
 
@@ -41,8 +41,8 @@ class PoseCalibration(ErrorFunction):
             # update the GD step direction
             self.updateStepDirection()
 
-            # update the GD step size
-            self.updateStepSize()
+            # update the GD step size with a SSE search
+            self.updateStepSize(self.getSumSquaresError)
 
             # save new x
             self.x.append(XSphere(
@@ -58,14 +58,34 @@ class PoseCalibration(ErrorFunction):
             # update cost function
             self.updateSumOfSquaresError()
 
-            if (self.sumOfSquares[-1] - self.sumOfSquares[-2]) < Constants.MAXIMUM_POSITION_COST_ROC_THRESHOLD:
+            # print iteration results
+            # self.printCurrentIteration()
+
+            if self.derivSumOfSquares < Constants.MAXIMUM_POSITION_COST_ROC_THRESHOLD:
                 # add good data to sols array
                 self.sols.append(SolutionSet(
-                    vSOS  = self.sumOfSquares[-1],
-                    dvSOS = self.sumOfSquares[-1] - self.sumOfSquares[-2],
-                    x     = self.x[-1]
+                    sumOfSquares = self.sumOfSquares.current,
+                    derivSumOfSquares = self.derivSumOfSquares,
+                    x = self.x[-1]
                 ))
 
                 # iterate solution object
                 self.s += 1
+                print("Pose solution iteration =", self.s)
+
+        self.updateFinalSolution()
+        self.printFinalSolution()
             
+    def printCurrentIteration(self):
+        print("Cost function V(x) =", self.sumOfSquares.current)
+        print("Cost function gradient dV(x) =", self.derivSumOfSquares)
+        print("o-vectors = ", '\n'
+           , '\t\t', "o1 =", self.o1_temp, '\n'
+           , '\t\t', "o2 =", self.o2_temp
+        )
+
+    def printFinalSolution(self):
+        print("\nFinal Solution Set")
+        print("\tO1 =", self.finalSolutionSet.x.vector1.toRectangular())
+        print("\tO2 =", self.finalSolutionSet.x.vector2.toRectangular())
+        print("\n")

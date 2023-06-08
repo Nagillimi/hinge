@@ -43,7 +43,7 @@ class AxisCalibration(ErrorFunction):
         # update the GD step direction
         self.updateStepDirection()
 
-        # update the GD step size
+        # update the GD step size with a SSE search
         self.updateStepSize(self.getSumSquaresError)
 
         # save new x
@@ -60,23 +60,41 @@ class AxisCalibration(ErrorFunction):
         # update cost function
         self.updateSumOfSquaresError()
 
-        dvSOS = self.sumOfSquares[-1] - self.sumOfSquares[-2]
-        # print("SSE =", self.sumOfSquares[-1])
-        print("dvSOS =", dvSOS)
-        if dvSOS < Constants.MAXIMUM_AXIS_COST_ROC_THRESHOLD:
+        # print iteration results
+        # self.printCurrentIteration()
+
+        if self.derivSumOfSquares < Constants.MAXIMUM_AXIS_COST_ROC_THRESHOLD:
             # add good data to sols array
             self.sols.append(SolutionSet(
-                vSOS  = self.sumOfSquares[-1],
-                dvSOS = dvSOS,
-                x     = self.x[-1]
+                sumOfSquares = self.sumOfSquares.current,
+                derivSumOfSquares = self.derivSumOfSquares,
+                x = self.x[-1]
             ))
 
             # iterate solution object
             self.s += 1
+            print("Axis solution iteration =", self.s)
             
             if self.s == Constants.SAMPLES_OF_UNIQUE_MOTION:
+                self.updateFinalSolution()
+                self.printFinalSolution()
                 return CalibrationResult.SUCCESS
             else:
                 return CalibrationResult.NOT_ENOUGH_UNIQUE_MOTION
         else:
             return CalibrationResult.MOTION_ERROR_ABOVE_THRESHOLD
+
+
+    def printCurrentIteration(self):
+        print("Cost function V(x) =", self.sumOfSquares.current)
+        print("Cost function gradient dV(x) =", self.derivSumOfSquares)
+        print("j-vectors = ", '\n'
+           , '\t\t', "j1 =", self.j1_temp, '\n'
+           , '\t\t', "j2 =", self.j2_temp
+        )
+
+    def printFinalSolution(self):
+        print("\nFinal Solution Set")
+        print("\tJ1 =", self.finalSolutionSet.x.vector1.toRectangular())
+        print("\tJ2 =", self.finalSolutionSet.x.vector2.toRectangular())
+        print("\n")

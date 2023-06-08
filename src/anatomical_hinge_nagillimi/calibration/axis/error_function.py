@@ -12,6 +12,14 @@ class ErrorFunction(GradientDescent):
         self.j1_temp = np.zeros(shape=(1, 3), dtype=float)
         self.j2_temp = np.zeros(shape=(1, 3), dtype=float)
 
+
+    # Updates the accumulating SSE
+    # [Nx1]
+    def updateSumOfSquaresError(self):
+        self.sumOfSquares.shift(self.getSumSquaresError())
+        self.derivSumOfSquares = self.sumOfSquares.delta()
+       
+
     # updates the error function
     # [2Nx1]
     def updateErrorFunction(self):
@@ -24,13 +32,7 @@ class ErrorFunction(GradientDescent):
     def updateJointVectors(self):
         self.j1_temp = np.array(self.x[-1].vector1.toRectangular())
         self.j2_temp = np.array(self.x[-1].vector2.toRectangular())
-
-
-    # Updates the accumulating SOS error
-    # [Nx1]
-    def updateSumOfSquaresError(self):
-        self.sumOfSquares.append(self.getSumSquaresError())
-        
+ 
 
     # Updates the jacobian (de_dx) for the current iteration
     # [2Nx4]
@@ -79,10 +81,8 @@ class ErrorFunction(GradientDescent):
     # if x is passed, enter search mode which returns a use case
     def getSumSquaresError(self, x: Optional[XSphere] = None) -> float:
         pastSum = 0
-        if len(self.sumOfSquares) > 0: pastSum = self.sumOfSquares[-1]
-
-        if x: return pastSum + self.getGyroError(x)**2 + self.getAccelError(x)**2
-        return pastSum + self.getGyroError()**2 + self.getAccelError()**2
+        if self.sumOfSquares.past != 0.: pastSum = self.sumOfSquares.current
+        return pastSum + self.getGyroError(x)**2 + self.getAccelError(x)**2
 
 
     def getGyroError(self, x: Optional[XSphere] = None) -> float:

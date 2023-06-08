@@ -1,25 +1,15 @@
 import numpy as np
+from anatomical_hinge_nagillimi.calibration.common_elements import CommonElements
 from anatomical_hinge_nagillimi.constants import Constants
-from anatomical_hinge_nagillimi.calibration.solution_set import SolutionSet
 from anatomical_hinge_nagillimi.calibration.x_sphere import XSphere
-from anatomical_hinge_nagillimi.calibration.motion_data import MotionData
 
-class GradientDescent:
+class GradientDescent(CommonElements):
     def __init__(self):
-        # Working iteration index
-        self.k = int(0)
-
-        # Solution iteration index
-        self.s = int(0)
+        super().__init__()
 
         # Residual errors for gyro and accel, e(x)
         # [(2)Nx1]
         self.err = []
-
-        # Working sum of squares error
-        #
-        # [1] (used as [N] for threshold calc)
-        self.sumOfSquares = []
 
         # Working solutions throughout algorithm iterations.
         # List not delcared emply, since there needs to be an initial guess
@@ -56,17 +46,6 @@ class GradientDescent:
         # [4x1] = [4x6][6x1]
         self.de_dx = np.zeros(shape=(4, 1))
 
-        # Motion data stored for computing the pose calibration (requires the same data)
-        self.motionData = MotionData()
-        
-        # Scratch/temp variables, for saving storage
-        self.v3temp1 = np.zeros(shape=(1, 3))
-        self.v3temp2 = np.zeros(shape=(1, 3))
-        self.v3temp3 = np.zeros(shape=(1, 3))
-        self.v3temp4 = np.zeros(shape=(1, 3))
-
-        # single solution collection for the position algorithm convergence
-        self.sols = []
 
     # Updates the step direction based on the polar gradient and residual errors.
     def updateStepDirection(self):
@@ -84,11 +63,11 @@ class GradientDescent:
             t2 = stepDirAsMatrix[2],
             p2 = stepDirAsMatrix[3])
         
-        print("GD iteration = [Hessian][JacT][e(x)] = {0} x ({1}, {2}) x ({3}, {4})".format(
-            self.hessian.shape, len(self.jacT), len(self.jacT[0]), len(self.err), 1))
-        print("\tHessian =", self.hessian)
-        print("\tJacT * e(x) = ", jacTerr)
-        print("GD step dir for x =", stepDirAsMatrix)
+        # print("GD iteration = [Hessian][JacT][e(x)] = {0} x ({1}, {2}) x ({3}, {4})".format(
+        #     self.hessian.shape, len(self.jacT), len(self.jacT[0]), len(self.err), 1))
+        # print("\tHessian =", self.hessian)
+        # print("\tJacT * e(x) = ", jacTerr)
+        # print("GD step dir for x =", stepDirAsMatrix)
 
 
     # Updates the step length in a Gauss-Newton gradient descent algorithm using 
@@ -97,15 +76,6 @@ class GradientDescent:
     # This is a higher order function to give access to searching against the existing
     # error data
     def updateStepSize(self, getSumOfSquaresError):
-        # gradient for BLS, "the change in vSOS" from the 2020 paper
-        gradient = self.sumOfSquares[-1]
-        if len(self.sumOfSquares) > 1:
-            gradient = self.sumOfSquares[-1] - self.sumOfSquares[-2]
-
-        # recompute gradient on first case, k = 0
-        if(self.k is 0):
-            gradient = self.sumOfSquares[-1]
-
         # intial step size, iterable
         self.stepSize = 1.0
         x = self.x[-1].getAsList()
@@ -119,12 +89,12 @@ class GradientDescent:
             p2 = x[3] - (self.stepSize * d[3]))
         
         rightSide: XSphere = XSphere(
-            t1 = x[0] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[0]),
-            p1 = x[1] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[1]),
-            t2 = x[2] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[2]),
-            p2 = x[3] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[3]))
+            t1 = x[0] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[0]),
+            p1 = x[1] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[1]),
+            t2 = x[2] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[2]),
+            p2 = x[3] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[3]))
 
-        # vSOS(current x - t * stepDir) > vSOS(current x - alpha * t * grad * stepDir)
+        # SSE(current x - t * stepDir) > SSE(current x - alpha * t * grad * stepDir)
         while (getSumOfSquaresError(leftSide) > getSumOfSquaresError(rightSide)):
             # decrement step size
             self.stepSize = Constants.BLS_BETA * self.stepSize
@@ -137,8 +107,8 @@ class GradientDescent:
                 p2 = x[3] - (self.stepSize * d[3]))
             
             rightSide = XSphere(
-                t1 = x[0] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[0]),
-                p1 = x[1] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[1]),
-                t2 = x[2] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[2]),
-                p2 = x[3] - (Constants.BLS_ALPHA * self.stepSize * gradient * d[3]))
+                t1 = x[0] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[0]),
+                p1 = x[1] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[1]),
+                t2 = x[2] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[2]),
+                p2 = x[3] - (Constants.BLS_ALPHA * self.stepSize * self.derivSumOfSquares * d[3]))
             

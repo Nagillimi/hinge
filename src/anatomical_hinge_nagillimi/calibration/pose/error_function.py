@@ -8,8 +8,16 @@ class ErrorFunction(GradientDescent):
         super().__init__()
 
         # scratch/temp variables, for saving storage
-        self.o1_temp = np.zeros(shape=(1, 3))
-        self.o2_temp = np.zeros(shape=(1, 3))
+        self.o1_temp = np.zeros(shape=(1, 3), dtype=float)
+        self.o2_temp = np.zeros(shape=(1, 3), dtype=float)
+
+
+    # Updates the accumulating SSE
+    # [Nx1]
+    def updateSumOfSquaresError(self):
+        self.sumOfSquares.shift(self.getSumSquaresError())
+        self.derivSumOfSquares = self.sumOfSquares.delta()
+       
 
     # updates the error function
     # [Nx1]
@@ -22,12 +30,6 @@ class ErrorFunction(GradientDescent):
     def updatePoseVectors(self):
         self.o1_temp = self.x[-1].vector1.toRectangular()
         self.o2_temp = self.x[-1].vector2.toRectangular()
-
-
-    # Updates the accumulating SOS error
-    # [Nx1]
-    def updateSumOfSquaresError(self):
-        self.sumOfSquares.append(self.getSumSquaresError())
 
 
     # Updates the jacobian (de_dx) for the current iteration
@@ -54,7 +56,7 @@ class ErrorFunction(GradientDescent):
             ),
             sensorData.g1.deriv.current()
         )
-        de_do1 / np.linalg.norm(de_do1)
+        de_do1 = de_do1 / np.linalg.norm(de_do1)
         de_do2 = self.getRadialAndTangentialAcceleration(
             sensorData.g2.raw.current(),
             sensorData.a2.raw.current() - self.getRadialAndTangentialAcceleration(
@@ -62,23 +64,26 @@ class ErrorFunction(GradientDescent):
             ),
             sensorData.g2.deriv.current()
         )
-        de_do2 / np.linalg.norm(de_do2)
-
+        de_do2 = de_do2 / np.linalg.norm(de_do2)
 
         # single accel-based de_dx = dj_dx * de_dj, [4x1] = [4x6][6x1]
         # inserted at the end of the jacbian row index (N)
-        self.jac.append(
-            np.matmul(do_dx, np.vstack((de_do1.transpose(), de_do2.transpose())))# * Constants.wACCEL
-        )
-        self.jacT.append(
-            np.matmul(do_dx, np.hstack((de_do1, de_do2)))# * Constants.wACCEL
-        )
+        de_do = np.hstack((de_do1, de_do2))
+        de_dx = np.ndarray.tolist(np.matmul(do_dx, de_do))
+        self.jac.append(de_dx)
+        if len(self.jacT) == 0:
+            self.jacT = [[de_dx[0]], [de_dx[1]], [de_dx[2]], [de_dx[3]]]
+        else:
+            for i, de in enumerate(de_dx):
+                self.jacT[i].append(de)
 
 
     # Gets the current iteration of the sum of squares error
     # if x is passed, enter search mode which returns a use case
     def getSumSquaresError(self, x: Optional[XSphere] = None) -> float:
-        return sum(self.sumOfSquares) + (self.getIMU1Error(x) - self.getIMU2Error(x))**2
+        pastSum = 0
+        if self.sumOfSquares.past != 0.: pastSum = self.sumOfSquares.current
+        return pastSum + (self.getIMU1Error(x) - self.getIMU2Error(x))**2
 
 
     def getIMU1Error(self, x: Optional[XSphere] = None) -> float:
