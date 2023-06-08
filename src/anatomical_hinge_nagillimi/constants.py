@@ -73,7 +73,7 @@ class Constants:
     # is below a certain threshold. An algorithm completes once a buffer
     # is filled to this size- like the "painting space" calibration in mocap
     # systems.
-    SAMPLES_OF_UNIQUE_MOTION = 10
+    SAMPLES_OF_UNIQUE_MOTION = 50
 
     # The maximum cost rate of change index used to parse out the good datasets
     # during the hinge axis algorithm. All samples with a cost at or below this
@@ -83,33 +83,7 @@ class Constants:
     # The maximum cost rate of change index used to parse out the good datasets
     # during the hinge position algorithm. All samples with a cost at or below this
     # threshold will pass and be included in the working variable collection
-    MAXIMUM_POSITION_COST_ROC_THRESHOLD = 0.005
-
-    # DEPRECATED!
-    # 
-    # The minimum number of samples allowed to pass convergence, taken from
-    # Seel 2012/14: where "N >> 4" samples.
-    # 
-    # Determined experimentally to be 10 samples
-    MINIMUM_SAMPLES_FOR_CONVERGENCE = 10
-
-    # DEPRECATED!
-    # 
-    # The minimum allowable tolerance required between the delta of sum of 
-    # squares error V(x) iterations of gradient descent for the axis algorithm.
-    # Used for j vectors only.
-    # 
-    # Determined experimentally to be 0.00000001
-    AXIS_GRADDESC_TOL = 0.00000001
-
-    # DEPRECATED!
-    # 
-    # The minimum allowable tolerance required between the delta of sum of 
-    # squares error V(x) iterations of gradient descent for the position algorithm.
-    # Used for o vectors only.  
-    # 
-    # Determined experimentally to be 0.00000001
-    POSE_GRADDESC_TOL = 0.000000001
+    MAXIMUM_POSITION_COST_ROC_THRESHOLD = 0.0005
 
     # Backtracking line search constant. Slop rate, the fraction of the decrease in V(x)
     # by linear extrapolation that's accepted by the algorithm. Typically on (0.01, 0.3).
