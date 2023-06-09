@@ -26,20 +26,11 @@ class XSphere:
 
     # Performs sine operation on the non-iterable contents of x
     def sin(self) -> list:
-        return [
-            math.sin(self.vector1.theta),
-            math.sin(self.vector1.phi),
-            math.sin(self.vector2.theta),
-            math.sin(self.vector2.phi),
-        ]
+        return [math.sin(el) for el in self.getAsList()]
     
 
     # Performs cosine operation on the non-iterable contents of x
     def cos(self) -> list:
-        return [
-            math.cos(self.vector1.theta),
-            math.cos(self.vector1.phi),
-            math.cos(self.vector2.theta),
-            math.cos(self.vector2.phi),
-        ]
+        return [math.cos(el) for el in self.getAsList()]
+
     

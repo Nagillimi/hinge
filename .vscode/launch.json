@@ -12,6 +12,13 @@
             "cwd": "${cwd}"
         },
         {
+            "name": "Run Tests",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/scripts/test.sh",
+            "cwd": "${cwd}"
+        },
+        {
             "name": "Deploy to TestPyPi",
             "type": "PowerShell",
             "request": "launch",
@@ -22,7 +29,7 @@
             "name": "Run with Serial Data",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/serial_test.py",
+            "program": "${workspaceFolder}/examples/serial_test.py",
             "console": "externalTerminal",
             "justMyCode": true
         }
