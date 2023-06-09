@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build Local Library",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/scripts/build-local.sh",
+            "cwd": "${cwd}"
+        },
+        {
+            "name": "Deploy to TestPyPi",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/scripts/deploy.sh",
+            "cwd": "${cwd}"
+        },
+        {
+            "name": "Run with Serial Data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/serial_test.py",
+            "console": "externalTerminal",
+            "justMyCode": true
+        }
+    ]
+}
