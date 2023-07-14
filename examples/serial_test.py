@@ -11,8 +11,9 @@ dps_per_raw_range = 250 / max_raw_range
 hinge = AnatomicalHinge()
 ser = serial.Serial("COM5", 38400)
 
-print("\nConnected to port: " + ser.portstr)
+print("\nConnected to port: ", ser.portstr)
 print("Incoming data format")
+print(ser.readline())
 serialData = ser.readline().split(b"\x09")
 print("Length of packet:", len(serialData))
 print("Packet type:", type(serialData), type(serialData[0]))
@@ -46,7 +47,7 @@ for x in range(10000):
     # print("g1 =", g1, "(rps)")
     # print("a2 =", a2, "(g)")
     # print("g2 =", g2, "(rps)")
-    combinedAngle = hinge.update(Data(ts, a1, g1, a2, g2))
+    combinedAngle = hinge.update(Data(int(ts), a1, g1, a2, g2))
     if hinge.status == HingeJointResult.STREAMING:
         print("\n")
         print(x)
