@@ -32,6 +32,13 @@
             "program": "${workspaceFolder}/examples/serial_test.py",
             "console": "externalTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Open Virtual Env",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/scripts/open-venv.sh",
+            "cwd": "${cwd}"
         }
     ]
 }

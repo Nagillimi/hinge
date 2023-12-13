@@ -3,10 +3,9 @@ import serial
 from anatomical_hinge_nagillimi.anatomical_hinge import AnatomicalHinge
 from anatomical_hinge_nagillimi.data import Data
 from anatomical_hinge_nagillimi.result.joint_result import HingeJointResult
-
-max_raw_range = 16384 * 2
-g_per_raw_range = 2 / max_raw_range
-dps_per_raw_range = 250 / max_raw_range
+from time import sleep
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 hinge = AnatomicalHinge()
 ser = serial.Serial("COM5", 38400)
@@ -19,9 +18,13 @@ print("Length of packet:", len(serialData))
 print("Packet type:", type(serialData), type(serialData[0]))
 print("First timestamp:", int(serialData[0]), "\n")
 
-for x in range(10000):
+max_raw_range = 16384 * 2
+g_per_raw_range = 2 / max_raw_range
+dps_per_raw_range = 250 / max_raw_range
+
+# Define the read data function
+def readData():
     byteData = ser.readline().split(b"\x09")
-    # print("raw byte array =", byteData)
     ts = int(byteData[0]) / 1000
     a1 = [
         float(byteData[1]) * g_per_raw_range,
@@ -43,14 +46,40 @@ for x in range(10000):
         math.radians(float(byteData[11]) * dps_per_raw_range),
         math.radians(float(byteData[12]) * dps_per_raw_range)
     ]
-    # print("a1 =", a1, "(g)")
-    # print("g1 =", g1, "(rps)")
-    # print("a2 =", a2, "(g)")
-    # print("g2 =", g2, "(rps)")
-    combinedAngle = hinge.update(Data(int(ts), a1, g1, a2, g2))
-    if hinge.status == HingeJointResult.STREAMING:
-        print("\n")
-        print(x)
-        print("Accel angle", hinge.hingeJoint.accelAngle)
-        print("Gyro angle", hinge.hingeJoint.gyroAngle.current)
-        print("Combined angle", combinedAngle)
+    return hinge.update(Data(int(ts), a1, g1, a2, g2))
+
+# Calibrate
+byteData = ser.readline().split(b"\x09")
+while len(byteData) != 0:
+    readData()
+    if hinge.status == HingeJointResult.STREAMING: break
+
+
+# Create figure for plotting
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+
+x_len = 100
+xs = list(range(0, x_len))
+ys = [0] * x_len
+ax.set_ylim(-300, 300)
+
+line, = ax.plot(xs, ys)
+
+# Format plot
+plt.xticks(rotation=45, ha='right')
+plt.subplots_adjust(bottom=0.30)
+
+def animate(i, ys):
+    data = readData()
+    # print(data)
+    ys.append(data)
+    ys = ys[-x_len:]
+    line.set_ydata(ys)
+    return line,
+
+# Set up plot to call animate() function periodically
+ani = animation.FuncAnimation(fig, animate, fargs=(ys,), interval=50, blit=True)
+plt.show()
+
+sleep(10000)
