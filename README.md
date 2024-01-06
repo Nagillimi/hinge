@@ -15,7 +15,13 @@ For learning reasons, all linear algebra, gradient desscent, backtracking line s
 A `Data` object collects the incoming data into a readable package and is included in the export of this library:
 
 ```python
-data = Data(ts: int, a1: list[float], g1:  list[float], a2:  list[float], g2: list[float])
+ts: int # timestamp in milliseconds
+a1: list[float] # accelerometer data for IMU 1, 3dof, including gravity, unit doesn't matter
+g1: list[float] # gyroscopic data for IMU 1, 3dof, unit in rad/s
+a2: list[float] # accelerometer data for IMU 2, 3dof, including gravity, unit doesn't matter
+g2: list[float] # gyroscopic data for IMU 2, 3dof, unit in rad/s
+
+data = Data(ts, a1, g1, a2, g2)
 ```
 
 ### Update
@@ -53,26 +59,34 @@ To check the status of the algorithm, call `hinge.status` which reports a union 
 
 ```python
 status = Union[CalibrationResult, HingeJointResult, KinematicResult, TemporalResult]
+```
 
+```python
 class CalibrationResult(Enum):
     SUCCESS = "Calibration succeeded"
     WAITING_FOR_MOTION = "Waiting for motion"
     INITIALIZED = "Initial conditions set"
     NOT_ENOUGH_UNIQUE_MOTION = "Not enough unique motion data yet"
     MOTION_ERROR_ABOVE_THRESHOLD = "Sum of squares error of motion above threshold"
+```
 
+```python
 class HingeJointResult(Enum):
     SETTING_INITIAL_CONDITIONS = "Setting ICs from average buffer"
     INITIAL_CONDITIONS_SET = "ICs from average buffer are set"
     STREAMING = "Streaming hinge angle"
+```
 
+```python
 class KinematicResult(Enum):
     MOTION_DETECTED = "Significant motion detected"
     CONSECUTIVE_MOTION_DETECTED = "Consecutive significant motion detected"
     MOTION_UNDER_THRESHOLD = "Insignificant motion detected"
     STILLNESS_DETECTED = "Stillness detected"
     CONSECUTIVE_STILLNESS_DETECTED = "Significant stillness detected"
+```
 
+```python
 class TemporalResult(Enum):
     OPTIMAL = "Current signal sampling is optimal for calibration"
     ABOVE = "Downsampled signal sampling since it's above optimal values"
@@ -90,7 +104,7 @@ An example that updates a graph using `matplotlib` is currently in progress.
 
 Simply put, the system detects an ideal downsampling index based on the incoming timestamps, calibrates the joint axis vectors and offsets (wrt to the inertial sensors), and computes the hinge angle based on those joint axis constants. Only datasets with significant enough motion will be included in the calculation to avoid local minima; this process is done in the `Kinematics` class.
 
-Overall, the hinge algorithm assumes:
+Overall, **the hinge algorithm assumes**:
 
 1. the placement of the inertial sensors will not change at any point while running
 2. the placement of the inertial sensors brackets the joint in question
@@ -112,7 +126,9 @@ class SolutionSet:
 
     # the converged solution set
     x: XSphere
+```
 
+```python
 class XSphere:
     def __init__(
             self,
@@ -123,7 +139,9 @@ class XSphere:
     ):
         self.vector1 = SphericalCoordinate(t1, p1)
         self.vector2 = SphericalCoordinate(t2, p2)
+```
 
+```python
 class SphericalCoordinate:
     def __init__(self, theta: float, phi: float):
         self.theta = theta
@@ -145,5 +163,6 @@ Pure hinge joint created with mecano, includes a potentiometer as a ground truth
 
 ## References
 
-[1] Seel, T.; Raisch, J.; Schauer, T. IMU-Based Joint Angle Measurement for Gait Analysis. Sensors 2014, 14, 6891-6909. https://doi.org/10.3390/s140406891 
-[2] Olsson, F.; Kok, M.; Seel, T.; Halvorsen, K. Robust Plug-and-Play Joint Axis Estimation Using Inertial Sensors. Sensors 2020, 20, 3534. https://doi.org/10.3390/s20123534 
+[1] Seel, T.; Raisch, J.; Schauer, T. IMU-Based Joint Angle Measurement for Gait Analysis. Sensors 2014, 14, 6891-6909. https://doi.org/10.3390/s140406891  
+
+[2] Olsson, F.; Kok, M.; Seel, T.; Halvorsen, K. Robust Plug-and-Play Joint Axis Estimation Using Inertial Sensors. Sensors 2020, 20, 3534. https://doi.org/10.3390/s20123534  
