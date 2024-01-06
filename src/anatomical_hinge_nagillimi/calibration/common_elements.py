@@ -29,7 +29,7 @@ class CommonElements:
 
         # the final solution set, to be used as the converged output, derived from the
         # collection of solution sets
-        self.finalSolutionSet = SolutionSet
+        self.finalSolutionSet = SolutionSet(0,0,XSphere())
 
 
     # Updates the final solution based on the converged results

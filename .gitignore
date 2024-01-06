@@ -2,6 +2,7 @@
 __pycache__
 /results
 .venv
+.pytest_cache
 /older-builds
 /scripts
 .vscode

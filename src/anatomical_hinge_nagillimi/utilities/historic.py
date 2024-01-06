@@ -4,7 +4,7 @@ class HistoricNumber:
         self.past    = 0.
         self.past2   = 0.
 
-    def shift(self, newNumber: float):
+    def shift(self, newNumber):
         self.past2   = self.past
         self.past    = self.current
         self.current = newNumber
@@ -22,7 +22,7 @@ class HistoricPoint:
         self.y = HistoricNumber()
         self.z = HistoricNumber()
 
-    def shift(self, newPoint: list[float]):
+    def shift(self, newPoint: list):
         self.x.shift(newPoint[0])
         self.y.shift(newPoint[1])
         self.z.shift(newPoint[2])

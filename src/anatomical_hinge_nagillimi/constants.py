@@ -83,7 +83,7 @@ class Constants:
     # The maximum cost rate of change index used to parse out the good datasets
     # during the hinge position algorithm. All samples with a cost at or below this
     # threshold will pass and be included in the working variable collection
-    MAXIMUM_POSITION_COST_ROC_THRESHOLD = 0.0005
+    MAXIMUM_POSITION_COST_ROC_THRESHOLD = 0.005
 
     # Backtracking line search constant. Slop rate, the fraction of the decrease in V(x)
     # by linear extrapolation that's accepted by the algorithm. Typically on (0.01, 0.3).
@@ -137,3 +137,6 @@ class Constants:
         "O1": [0.313682761, -0.945354297, 0.075673158],
         "O2": [0.481507229, 0.864035385, -0.144495404],
     }
+
+    def setDownsamplingIndex(self, index: int):
+        self.ALGORITHM_DOWNSAMPLING_INDEX = index

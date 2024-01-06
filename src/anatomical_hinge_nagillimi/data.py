@@ -15,3 +15,12 @@ class Data:
         self.g1 = g1
         self.a2 = a2
         self.g2 = g2
+
+    def __str__(self) -> str:
+        return "ts:\t{}\ta1:\t{}\ta2:\t{}\tg1:\t{}\tg2:{}".format( 
+            self.ts.__str__(),
+            self.a1.__str__(),
+            self.g1.__str__(),
+            self.a2.__str__(),
+            self.g2.__str__()
+        )
